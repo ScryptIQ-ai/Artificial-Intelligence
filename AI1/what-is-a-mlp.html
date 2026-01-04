@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <!-- MathJax for mathematical notation -->
+    <script>
+    MathJax = {
+        tex: {
+            inlineMath: [['$', '$']],
+            displayMath: [['$$', '$$']],
+            processEscapes: true
+        },
+        svg: {
+            fontCache: 'global'
+        }
+    };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+    
+    <!-- Syntax Highlighting with highlight.js -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/python.min.js"></script>
+    
+    <!-- Favicons -->
+    <link rel="icon" type="image/x-icon" href="../assets/favicon.ico">
+    <link rel="icon" type="image/png" sizes="32x32" href="../assets/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="../assets/favicon-16x16.png">
+    <link rel="apple-touch-icon" sizes="192x192" href="../assets/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="../assets/android-chrome-192x192.png">
+    <link rel="icon" type="image/png" sizes="512x512" href="../assets/android-chrome-512x512.png">
+    
+    <!-- Core Stylesheets -->
+    <link rel="stylesheet" href=../assets/colours.css>
+    <link rel="stylesheet" href="../assets/shared-styles.css">
+    <link rel="stylesheet" href="../assets/nav-bar.css">
+    <link rel="stylesheet" href="../assets/module_card.css">
+    <link rel="stylesheet" href="../assets/learning_outcomes.css">
+    <link rel="stylesheet" href="../assets/learning_lists.css">
+    <link rel="stylesheet" href="../assets/box_styles.css">
+    <link rel="stylesheet" href="../assets/code_styles.css">
+    <link rel="stylesheet" href="../assets/static_output.css">
+
+    <!-- Meta Tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>L2D - AI1 - The Multi-Layer Pereceptron</title>
+        
+</head>
+<body>
+    
+    <!-- Sidebar Navigation -->
+    <div id="sidebar" class="sidebar">
+        <div class="sidebar-header">
+            <a href="../homepage.html" style="text-decoration: none; display: inline-block;">
+                <img src="../assets/scryptIQ_logo_dark.png" alt="scryptIQ Logo" class="sidebar-logo">
+            </a>
+        </div>
+
+        <h3>Content</h3>
+        <ul>
+            <li><a href="./introduction.html" class="">Introduction</a></li>
+            <li>
+                <div class="nav-toggle active" data-target="expandable-section-1">
+                    The Multi-Layer Pereceptron
+                    <span class="toggle-icon">▼</span>
+                </div>
+                <ul class="nested-nav expanded" id="expandable-section-1"><li><a href="#introduction">Introduction</a></li><li><a href="#what-is-deep-learning">What is deep learning?</a></li><li><a href="#what-are-neural-networks">What are neural networks?</a></li><li><a href="#neurons---layers">Neurons & layers</a></li>
+                </ul>
+            </li><li><a href="./training.html">Training</a></li><li><a href="./testing-inference.html">What is a MLP?</a></li><li><a href="./further-reading.html">Further Reading</a></li><li><a href="./assignment.html">Assignment</a></li><li><a href="./feedback.html">Feedback</a></li>
+        </ul>
+
+        <h3 class="collapsible-header collapsed">
+            Resources
+            <span class="collapse-icon">►</span>
+        </h3>
+        <div class="collapsible-content collapsed">
+            <ul>
+                <li><a href="./glossary.html">Glossary</a></li><li><a href="./downloads.html">Downloads</a></li><li><a href="../HB/introduction.html">Handbook</a></li>
+            </ul>
+        </div>
+
+        <h3>
+            <li><a href="./report-issue.html">Report an Issue</a></li>
+        </h3>
+    </div>
+    
+    <!-- Sidebar Toggle Button -->
+    <button id="sidebar-toggle" class="sidebar-toggle">❮</button>
+    
+    <!-- Main Content Area -->
+    <div id="main-content" class="main-content">
+        <!-- Top Navigation Bar -->
+        <div class="top-navbar">
+            <h1 class="page-title">Artificial Intelligence 1</h1>
+            <div class="nav-actions">
+                <a href="../homepage.html" class="text-button" title="Materials homepage">
+                    Homepage
+                </a>
+                <a href="https://learntodiscover.ai/my-cohorts/" class="text-button" title="Find out more about us">
+                    Learn to Discover
+                </a>
+            </div>
+        </div>
+
+        
+            <div class="module-card" id="introduction">
+                <div class="module-header">
+                    The Multi-Layer Pereceptron <span class="module-tag">AI1</span>
+                </div>
+                <div class="module-body">
+                    <h3>Learning Objectives</h3>
+                    <div class="learning-outcomes">
+                        <div class="outcome-item">
+                    <span class="outcome-number">1</span>
+                    <span class="outcome-text">Understand the basic components of a vanilla neural network</span>
+                </div>
+<div class="outcome-item">
+                    <span class="outcome-number">2</span>
+                    <span class="outcome-text">Understand the main elements involved in training a neural network</span>
+                </div>
+<div class="outcome-item">
+                    <span class="outcome-number">3</span>
+                    <span class="outcome-text">Explore the MNIST classification example</span>
+                </div>
+                    </div>
+                    <h3>Introduction</h3>
+                    <p>The main objective of this lesson is to obtain an overview of how neural networks work, and to provide you with a solid foundation, should you wish to dive deeper into these models, and apply them in your research.<br><br>We will primarily explore a &#x27;vanilla neural network&#x27;: which represents the simplest network architecture and is not really used in practice. It is, however, very useful in aiding an understanding the fundamentals of training deep neural networks.</p>
+                </div>
+            </div>
+            
+            <div class="module-card" id="what-is-deep-learning">
+                <div class="module-body">
+                    <div class="module-section">
+                        <h3>What is deep learning?</h3>
+                        <p>If you have completed the course up to this point, you should be familiar with classical machine learning as a concept: a collection of techniques that allow computers to improve their predictions by learning from patterns and structure in your data. Classical machine learning approaches thus often requires humans to carefully decide how data should be represented before learning can take place.<br><br><strong>Deep learning</strong> is essentially an extension of this, where this process is largely <em>automated</em> through the use of <strong>neural networks</strong> with <em>multiple layers</em>, which learn patterns and representations <em>directly</em> from your data. This is the important distinction: instead of relying on carefully selected and provided features, deep learning models automatically discover useful features by progressively <em>transforming</em> raw inputs in an increasingly abstract way.<br><br>This layered learning process makes deep learning particularly effective for <em>complex tasks</em> such as <strong>image recognition</strong>, <strong>speech transcription</strong> and <strong>natural language comprehension</strong>, where explicit rule-based solutions are often very challenging to define. These so-called <em>intuitive</em> problems - tasks that are easy for human cognition to process, but are difficult to describe using explicit rules - are where deep learning excels.<br><br>This strength is thought to come from the combination of:<br><ul class="nested-list"><li>Learning from experience</li><br><li>Representing information hierarchically</li></ul>These allowing deep learning models to capture subtle and abstract patterns in data.<br><br>Alongside the term &#x27;deep learning&#x27;, <em>artificial intelligence</em> will likely be another that you have heard, in abudance.</p>
+        <div class="info-box key-terms-box">
+            <div class="box-title">
+                <span class="box-icon"></span>
+                KEY TERMS
+            </div>
+            <div class="box-content">
+                <p></p>
+            </div>
+        </div>
+        <p>Broadly speaking, <strong>Artificial intelligence (AI)</strong> is the field of computer science concerned with building systems that can perform <em>tasks which normally require human intelligence</em>. These tasks include <em>learning</em> from experience, recognising <em>patterns</em>, <em>reasoning</em> under uncertainty, making <em>decisions</em> and adapting <em>behaviour</em>, in response to new information.<br><br>Rather than being explicitly programmed with fixed rules for every situation, AI systems are often designed to identify <em>structure</em> in data, using this to guide their actions. In this sense, intelligence is not hard-coded, but emerges from the interaction between algorithms, data and learning processes.</p>
+        <div class="info-box history-box">
+            <div class="box-title">
+                <span class="box-icon"></span>
+                HISTORY
+            </div>
+            <div class="box-content">
+                <p>An interesting historical quirk of AI is that, as soon as a task becomes reliable and part of a routine, it often stops being labelled as “AI” at all. This phenomenon is known as the <em>AI effect</em>. A good example of this is <strong>optical character recognition</strong>: once considered a core AI challenge, it is now so commonplace that it is rarely thought of as intelligent behaviour.</p>
+            </div>
+        </div>
+        
+                    </div>
+                </div>
+            </div>
+            
+            <div class="module-card" id="what-are-neural-networks">
+                <div class="module-body">
+                    <div class="module-section">
+                        <h3>What are neural networks?</h3>
+                        
+        <div class="code-area">
+            <div class="code-container code-fixed">
+                <pre><code class="language-python" id="code-1">import torch # this is the PyTorch module
+import torch.nn as nn # this is the neural network module
+import torch.nn.functional as F # this is the functional module
+import torch.optim as optim # this is the optimizer module
+import torchvision # this is the vision module
+
+import warnings
+warnings.filterwarnings(&quot;ignore&quot;) # this is to ignore warnings
+
+# Import the MNIST dataset
+from torchvision import datasets, transforms
+
+# Import the matplotlib module
+import matplotlib.pyplot as plt
+
+# Import the numpy module
+import numpy as np</code></pre>
+            </div>
+            
+        </div>
+        
+                    </div>
+                </div>
+            </div>
+            
+            <div class="module-card" id="neurons---layers">
+                <div class="module-body">
+                    <div class="module-section">
+                        <h3>Neurons & layers</h3>
+                        <p><strong>Neurons</strong> are the basic unit of a neural network, and they are organised in layers. Remember that it is this eventual, cumulative hierarchy of concepts (represented by each layer) that is characteristic of deep learning.<br><br>In the figure below, we illustrate a neural network consisting of:<br><ul class="nested-list"><li>An initial layer of 3 neurons and</li><br><li>A second layer with only 1 neuron</li></ul></p><p><img src="./images/Fig_neurons.png" alt="Fig. 1 : schematic of a simple perceptron" class="notebook-image"></p><p>Let&#x27;s think of each neuron as holding a number. In the example above:<br><ul class="nested-list"><li>The neurons in the initial layer hold each of the input values: $x_1, x_2, x_3$</li><br><li>The single neuron in the second layer holds the output of a certain function $f$, that takes as</li></ul>input the output of all the neurons in the previous layer<ul class="nested-list"><li>This function $f$ is called the <strong>activation function</strong>.</li></ul>As we will see later in the lesson, there are different types of activation function.</p>
+        <div class="info-box key-terms-box">
+            <div class="box-title">
+                <span class="box-icon"></span>
+                KEY TERMS
+            </div>
+            <div class="box-content">
+                <p></p>
+            </div>
+        </div>
+        
+        <div class="code-area">
+            <div class="code-container code-fixed">
+                <pre><code class="language-python" id="code-2"># define a tensor for x, and 
+# set requires_grad to True: this indicates to PyTorch that we plan to compute
+# the gradient of this tensor
+x = torch.tensor(data=2.0, requires_grad=True)
+
+# define the function y; the double asterisk denotes &#x27;to the power of&#x27;.
+y = 2*x**3 + x + 1
+
+# calculate the gradient of y with respect to x:
+y.backward()
+
+# Assign the gradient (dy/dx) to a variable, and print:
+dy_dx = x.grad
+print(f&#x27;dy/dx for x = 2: {dy_dx}&#x27;)</code></pre>
+            </div>
+            <div class="output-container"><pre class="output-error">---------------------------------------------------------------------------
+NameError                                 Traceback (most recent call last)
+Cell In[2], line 6
+      1 # FIXED WITH OUTPUT
+      2 
+      3 # define a tensor for x, and 
+      4 # set requires_grad to True: this indicates to PyTorch that we plan to compute
+      5 # the gradient of this tensor
+----&gt; 6 x = torch.tensor(data=2.0, requires_grad=True)
+      8 # define the function y; the double asterisk denotes &#x27;to the power of&#x27;.
+      9 y = 2*x**3 + x + 1
+
+NameError: name &#x27;torch&#x27; is not defined</pre></div>
+        </div>
+        
+        <div class="code-area">
+            <div class="code-container code-fixed">
+                <pre><code class="language-python" id="code-3"># Plot the function y and the gradient dy/dx at a range of values for x, using Numpy&#x27;s arange function.
+x_range = np.arange(-5, 5, 0.1)
+
+# Calculate the gradient of y with respect to x using PyTorch iteratively over the range of values for x:
+
+#Begin by creating two empty lists:
+dy_dx_torch = []
+y_list = []
+
+#Populate these with the following for loop: 
+for i in x_range:
+    x = torch.tensor(i, requires_grad = True)
+    y = 2*x**3 + x + 1
+    y.backward()
+    dy_dx_torch.append(x.grad)
+    y_list.append(y.item())
+
+# Convert these lists into numpy arrays:
+dy_dx_torch = np.array(dy_dx_torch)
+y = np.array(y_list)
+
+# Plot the function y and the gradient dy/dx at a range of values for x:
+plt.plot(x_range, y, label=&#x27;y&#x27;)
+plt.plot(x_range, dy_dx_torch, label=&#x27;dy/dx&#x27;)
+plt.legend()
+plt.xlabel(&#x27;x&#x27;)
+plt.ylabel(&#x27;y&#x27;)
+plt.title(&#x27;Function y and its gradient dy/dx&#x27;)
+plt.show()</code></pre>
+            </div>
+            <div class="output-container"><pre class="output-error">---------------------------------------------------------------------------
+NameError                                 Traceback (most recent call last)
+Cell In[3], line 4
+      1 # FIXED WITH OUTPUT
+      2 
+      3 # Plot the function y and the gradient dy/dx at a range of values for x, using Numpy&#x27;s arange function.
+----&gt; 4 x_range = np.arange(-5, 5, 0.1)
+      6 # Calculate the gradient of y with respect to x using PyTorch iteratively over the range of values for x:
+      7 
+      8 #Begin by creating two empty lists:
+      9 dy_dx_torch = []
+
+NameError: name &#x27;np&#x27; is not defined</pre></div>
+        </div>
+        
+        <div class="code-area">
+            <div class="code-container code-fixed">
+                <pre><code class="language-python" id="code-4"># We can define the same neuron function as before, but this time using PyTorch instead of Numpy:
+
+def neuron_in_pytorch(x, w, b, activation_function=torch.tanh):
+    # Calculate the dot product of the inputs and the weights:
+    z = torch.dot(x, w) + b
+    # Apply the activation function to the dot prdouct:
+    a = activation_function(z)
+    return a
+
+# Define a tensor for x, make it a vector, and set requires_grad to True:
+x = torch.tensor([0.2, 0.3], requires_grad=True)
+
+# Define the weights and bias:
+w = torch.tensor([1.0, 0.4])
+b = torch.tensor(1.0)
+
+# Define the function y:
+y = neuron_in_pytorch(x, w, b)
+
+# Calculate the gradient of y with respect to x:
+y.backward()
+
+# Assign the gradient (delta y over delta x) to a variable, and print:
+dy_dx = x.grad
+
+print(f&#x27;dy/dx for x = [0.2, 0.3]: {dy_dx}&#x27;)</code></pre>
+            </div>
+            <div class="output-container"><pre class="output-error">---------------------------------------------------------------------------
+NameError                                 Traceback (most recent call last)
+Cell In[4], line 5
+      1 # FIXED WITH OUTPUT
+      2 
+      3 # We can define the same neuron function as before, but this time using PyTorch instead of Numpy:
+----&gt; 5 def neuron_in_pytorch(x, w, b, activation_function=torch.tanh):
+      6     # Calculate the dot product of the inputs and the weights:
+      7     z = torch.dot(x, w) + b
+      8     # Apply the activation function to the dot prdouct:
+
+NameError: name &#x27;torch&#x27; is not defined</pre></div>
+        </div>
+        
+        <div class="code-area">
+            <div class="code-container code-fixed">
+                <pre><code class="language-python" id="code-5"># Plot a x^2 function:
+x = np.arange(-2, 2.1, 0.1)
+y = x**2
+plt.plot(x, y)
+plt.xlabel(&#x27;Input x&#x27;)
+plt.ylabel(&#x27;Output y&#x27;)
+# Using matplotlib.pyplot&#x27;s annotate function, label the minimum with a black arrow, and text label, as follows:
+plt.annotate(&#x27;Minimum&#x27;, xy=(0, 0), xytext=(0, 0.5), arrowprops=dict(facecolor=&#x27;black&#x27;, shrink=0.05))
+plt.show()</code></pre>
+            </div>
+            <div class="output-container"><pre class="output-error">---------------------------------------------------------------------------
+NameError                                 Traceback (most recent call last)
+Cell In[5], line 4
+      1 # FIXED WITH OUTPUT
+      2 
+      3 # Plot a x^2 function:
+----&gt; 4 x = np.arange(-2, 2.1, 0.1)
+      5 y = x**2
+      6 plt.plot(x, y)
+
+NameError: name &#x27;np&#x27; is not defined</pre></div>
+        </div>
+        
+        <div class="code-area">
+            <div class="code-container code-fixed">
+                <pre><code class="language-python" id="code-6"># Write a function that starts with a random value for x, and then iteratively updates x using the gradient descent algorithm:
+def gradient_descent(x, learning_rate=0.1, n_iterations=100):
+
+    learning_rate = torch.tensor(0.1)
+    x_list = []
+    for i in range(n_iterations):
+        # Define the function y:
+        y = x**2
+        # Calculate the gradient of y with respect to x:
+        y.backward()
+                
+        with torch.no_grad():
+            # Update x; here -= subtracts learning rate * x.grad from x, and assigns the result to the variable x.
+            x -= learning_rate * x.grad
+            # Print the updated value of x:
+            print(f&#x27;x at iteration {i}: {x}&#x27;)
+            # Append the updated value of x to the list:
+            x_list.append(x.item())
+            # Set the gradient to zero, otherwise it will accumulate:
+            x.grad.zero_()  
+    return x, x_list</code></pre>
+            </div>
+            
+        </div>
+        
+        <div class="code-area">
+            <div class="code-container code-fixed">
+                <pre><code class="language-python" id="code-7"># Define a tensor for x, make it a scalar, and set requires_grad to True:
+x = torch.tensor(20.0, requires_grad = True)
+
+# Call the gradient_descent function:
+x, x_list = gradient_descent(x, learning_rate=0.1, n_iterations=150)
+
+# Plot the function y = x^2:
+x = np.arange(-20, 20.1, 0.1)
+y = x**2
+plt.plot(x, y)
+
+# Plot the values of x that were updated during gradient descent, make each point a red star and overlay it onto
+# the function y = x^2:
+plt.scatter(x_list, [i**2 for i in x_list], color=&#x27;red&#x27;, marker=&#x27;*&#x27;, s=100, zorder=10)
+plt.xlabel(&#x27;Input x&#x27;)
+plt.ylabel(&#x27;Output y&#x27;)
+plt.show()</code></pre>
+            </div>
+            <div class="output-container"><pre class="output-error">---------------------------------------------------------------------------
+NameError                                 Traceback (most recent call last)
+Cell In[7], line 4
+      1 # FIXED WITH OUTPUT
+      2 
+      3 # Define a tensor for x, make it a scalar, and set requires_grad to True:
+----&gt; 4 x = torch.tensor(20.0, requires_grad = True)
+      6 # Call the gradient_descent function:
+      7 x, x_list = gradient_descent(x, learning_rate=0.1, n_iterations=150)
+
+NameError: name &#x27;torch&#x27; is not defined</pre></div>
+        </div>
+        
+        <div class="code-area">
+            <div class="code-container code-fixed">
+                <pre><code class="language-python" id="code-8">plt.plot(x_list)
+plt.axhline(y=0, color=&#x27;r&#x27;, linestyle=&#x27;--&#x27;, label=&#x27;true $x_{minimum}$&#x27;)
+plt.xlabel(&#x27;iteration&#x27;)
+plt.ylabel(&#x27;x&#x27;)
+plt.legend()
+plt.show()</code></pre>
+            </div>
+            <div class="output-container"><pre class="output-error">---------------------------------------------------------------------------
+NameError                                 Traceback (most recent call last)
+Cell In[8], line 3
+      1 # FIXED WITH OUTPUT
+----&gt; 3 plt.plot(x_list)
+      4 plt.axhline(y=0, color=&#x27;r&#x27;, linestyle=&#x27;--&#x27;, label=&#x27;true $x_{minimum}$&#x27;)
+      5 plt.xlabel(&#x27;iteration&#x27;)
+
+NameError: name &#x27;plt&#x27; is not defined</pre></div>
+        </div>
+        
+                    </div>
+                </div>
+            </div>
+            
+        
+        <div class="page-navigation">
+            <a href="./introduction.html" class="nav-button prev">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                    <path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/>
+                </svg>
+                Previous
+            </a>
+            <a href="./training.html" class="nav-button next">
+                Next
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                    <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/>
+                </svg>
+            </a></div>
+        
+        <!-- Footer -->
+        <div class="footer">
+            <div>© All materials are copyright scryptIQ 2025</div>
+            <div>Static Notebook - Pre-executed Content</div>
+        </div>
+    </div>
+
+    <!-- JavaScript -->
+    <script src="../assets/main.js"></script>
+    
+    <!-- Initialize syntax highlighting -->
+    <script>
+        // Set page ready flag immediately for PDF generation
+        window.pageReady = true;
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('pre code').forEach((block) => {
+                hljs.highlightElement(block);
+            });
+        });
+    </script>
+</body>
+</html>
+    
