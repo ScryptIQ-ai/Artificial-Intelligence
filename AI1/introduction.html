@@ -62,7 +62,7 @@
 
         <h3>Content</h3>
         <ul>
-            <li><a href="./introduction.html" class="active">Introduction</a></li><li><a href="./what-is-a-mlp.html">The Multi-Layer Pereceptron</a></li><li><a href="./training.html">Training</a></li><li><a href="./testing-inference.html">What is a MLP?</a></li><li><a href="./further-reading.html">Further Reading</a></li><li><a href="./assignment.html">Assignment</a></li><li><a href="./feedback.html">Feedback</a></li>
+            <li><a href="./introduction.html" class="active">Introduction</a></li><li><a href="./what-is-a-mlp.html">The Multi-Layer Pereceptron</a></li><li><a href="./training.html">Training a MLP</a></li><li><a href="./testing-inference.html">Testing & Inference</a></li><li><a href="./further-reading.html">Further Reading</a></li><li><a href="./assignment.html">Assignment</a></li><li><a href="./feedback.html">Feedback</a></li>
         </ul>
 
         <h3 class="collapsible-header collapsed">
@@ -104,26 +104,17 @@
                     Introduction <span class="module-tag">AI1</span>
                 </div>
                 <div class="module-body">
-                    <p>Welcome to <strong>Artificial Intelligence 1</strong></p>
-                </div>
+                    <p>Welcome to <strong>Artificial Intelligence 1</strong> where will first try to explain and understand a neural network. We&#x27;ll start from the very basics, breaking down the neural network into its constituent parts. Next we&#x27;ll look at training, how it workds and how it is implemented. And lastly, we will create our own neural network from scratch, have it tackle a problem and score its output.</p><p>In this lesson, we will use the popular Python framework <strong>PyTorch</strong> to explore the foundations of deep learning. <strong>PyTorch</strong> is an open-source machine learning framework for Python that provides tools for building, training and deploying neural networks. It combines efficient tensor computation with automatic differentiation, allowing models to be defined and optimised in a flexible and intuitive way. PyTorch is widely used in both research and industry due to its clear syntax, strong support for GPU acceleration and seamless integration with the Python scientific computing ecosystem.<br><br>Whilst we will be explaining throughout what each step does, this will not be a deep dive into the <strong>PyTorch</strong> ecosystem. You can learn more about how to use <em>PyTorch</em> from their own website <a href="https://docs.pytorch.org/tutorials/beginner/basics/intro.html">here</a>.</p>
+        <div class="info-box tip-box">
+            <div class="box-title">
+                <span class="box-icon"></span>
+                TIP
             </div>
-            
-            <div class="module-card" id="learning-overview">
-                <div class="module-body">
-                    <div class="module-section">
-                        <h3>Learning Overview</h3>
-                        <table class="markdown-table">
-<thead>
-<tr>
-<th><strong>Concept</strong></th>
-<th><strong>Synergy</strong></th>
-<th><strong>Syntax & Functions</strong></th>
-<th><strong>Objective / Application</strong></th>
-<th><strong>Common Pitfalls / Notes</strong></th>
-</tr>
-</thead>
-</table>
-                    </div>
+            <div class="box-content">
+                <p>Everything in the online materials can be run as a jupyter notebook, simply download them under the Resources/Downloads tab in the sidebar.<br><br>To run the notebooks you may wish to create a virtual environment with the correct packages installed. The relevant packages and their versions can be found in the <code>pyproject.toml</code> in your lesson repository, see the README on how to install these packages from the <strong>toml</strong> file. We have chosen to install the <strong>CPU</strong> only version of torch for this example as we are not dealing with large datasets, however when it comes to the real world you may want to use the GPU enabled version which is much quicker (if you have a GPU).<br><br>If you are unsure about virtual environments, please look through the relevant section of our <a href="/Python-Fundamentals/PF0/introduction.html">Python Orientation reference materials</a>.</p>
+            </div>
+        </div>
+        
                 </div>
             </div>
             
@@ -461,6 +452,11 @@ except Exception as e:
             // Small delay to show progression
             await new Promise(resolve => setTimeout(resolve, 100));
         }
+        
+        // Set flag to indicate all FIXED cells have been executed
+        // This is used by PDF generation to ensure all outputs are ready
+        window.allCellsExecuted = true;
+        console.log("All FIXED cells executed successfully");
         
         // Setup all editable code blocks (but don't execute them)
         document.querySelectorAll('.code-editor textarea').forEach((textarea) => {
