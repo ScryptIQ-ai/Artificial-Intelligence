@@ -1,0 +1,974 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <!-- MathJax for mathematical notation -->
+    <script>
+    MathJax = {
+        tex: {
+            inlineMath: [['$', '$']],
+            displayMath: [['$$', '$$']],
+            processEscapes: true
+        },
+        svg: {
+            fontCache: 'global'
+        }
+    };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+    
+    <!-- Syntax Highlighting with highlight.js -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/python.min.js"></script>
+    
+    <!-- Favicons -->
+    <link rel="icon" type="image/x-icon" href="../assets/favicon.ico">
+    <link rel="icon" type="image/png" sizes="32x32" href="../assets/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="../assets/favicon-16x16.png">
+    <link rel="apple-touch-icon" sizes="192x192" href="../assets/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="../assets/android-chrome-192x192.png">
+    <link rel="icon" type="image/png" sizes="512x512" href="../assets/android-chrome-512x512.png">
+    
+    <!-- Core Stylesheets -->
+    <link rel="stylesheet" href=../assets/colours.css>
+    <link rel="stylesheet" href="../assets/shared-styles.css">
+    <link rel="stylesheet" href="../assets/nav-bar.css">
+    <link rel="stylesheet" href="../assets/module_card.css">
+    <link rel="stylesheet" href="../assets/learning_outcomes.css">
+    <link rel="stylesheet" href="../assets/learning_lists.css">
+    <link rel="stylesheet" href="../assets/box_styles.css">
+    <link rel="stylesheet" href="../assets/code_styles.css">
+    <link rel="stylesheet" href="../assets/static_output.css">
+
+    <!-- Meta Tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>L2D - AI3 - Feature Importance</title>
+        
+</head>
+<body>
+    
+    <!-- Sidebar Navigation -->
+    <div id="sidebar" class="sidebar">
+        <div class="sidebar-header">
+            <a href="../homepage.html" style="text-decoration: none; display: inline-block;">
+                <img src="../assets/scryptIQ_logo_dark.png" alt="scryptIQ Logo" class="sidebar-logo">
+            </a>
+        </div>
+
+        <h3>Content</h3>
+        <ul>
+            <li><a href="./introduction.html" class="">Introduction</a></li><li><a href="./what-is-xAI.html">Explaining AI output</a></li>
+            <li>
+                <div class="nav-toggle active" data-target="expandable-section-2">
+                    Feature Importance
+                    <span class="toggle-icon">▼</span>
+                </div>
+                <ul class="nested-nav expanded" id="expandable-section-2"><li><a href="#introduction">Introduction</a></li><li><a href="#setup">Setup</a></li><li><a href="#occlusion-introduction">Occlusion introduction</a></li><li><a href="#implementing-occlusion">Implementing Occlusion</a></li><li><a href="#occluding-segments">Occluding segments</a></li><li><a href="#results--segment-importance">Results: Segment importance</a></li><li><a href="#lime">LIME</a></li><li><a href="#results--comparing-lime">Results: Comparing LIME</a></li><li><a href="#summary">Summary</a></li>
+                </ul>
+            </li><li><a href="./tabular-xAI.html">Tabular xAI</a></li><li><a href="./assignment.html">Assignment</a></li><li><a href="./feedback.html">Feedback</a></li>
+        </ul>
+
+        <h3 class="collapsible-header collapsed">
+            Resources
+            <span class="collapse-icon">►</span>
+        </h3>
+        <div class="collapsible-content collapsed">
+            <ul>
+                <li><a href="./glossary.html">Glossary</a></li><li><a href="./downloads.html">Downloads</a></li><li><a href="../HB/introduction.html">Handbook</a></li>
+            </ul>
+        </div>
+
+        <h3 class="collapsible-header collapsed">
+            Previous Modules
+            <span class="collapse-icon">►</span>
+        </h3>
+        <div class="collapsible-content collapsed">
+            <ul>
+            <li><a href="../AI1/introduction.html">AI1</a></li>
+            <li><a href="../AI2/introduction.html">AI2</a></li>
+        </ul>
+        </div>
+
+        <h3>
+            <li><a href="./report-issue.html">Report an Issue</a></li>
+        </h3>
+    </div>
+    
+    <!-- Sidebar Toggle Button -->
+    <button id="sidebar-toggle" class="sidebar-toggle">❮</button>
+    
+    <!-- Main Content Area -->
+    <div id="main-content" class="main-content">
+        <!-- Top Navigation Bar -->
+        <div class="top-navbar">
+            <h1 class="page-title">Artificial Intelligence 3</h1>
+            <div class="nav-actions">
+                <a href="../homepage.html" class="text-button" title="Materials homepage">
+                    Homepage
+                </a>
+                <a href="https://learntodiscover.ai/my-cohorts/" class="text-button" title="Find out more about us">
+                    Learn to Discover
+                </a>
+            </div>
+        </div>
+
+        
+            <div class="module-card" id="introduction">
+                <div class="module-header">
+                    Feature Importance <span class="module-tag">AI3</span>
+                </div>
+                <div class="module-body">
+                    <h3>Learning Objectives</h3>
+                    <div class="learning-outcomes">
+                        <div class="outcome-item">
+                    <span class="outcome-number">1</span>
+                    <span class="outcome-text">How to load in a previously trained model.</span>
+                </div>
+<div class="outcome-item">
+                    <span class="outcome-number">2</span>
+                    <span class="outcome-text">What is the Captum xAI Python package.</span>
+                </div>
+<div class="outcome-item">
+                    <span class="outcome-number">3</span>
+                    <span class="outcome-text">What is feature ablation and how does it work?</span>
+                </div>
+<div class="outcome-item">
+                    <span class="outcome-number">4</span>
+                    <span class="outcome-text">How to extend feature importance with LIME.</span>
+                </div>
+                    </div>
+                    <h3>Introduction</h3>
+                    <p>This lesson will focus on the importance of sub-features for the eddicacy of a machine learning model. <strong>Feature Importance</strong> is one of the simplest and most interpretable methods for explaining predictions made by a machine learning model. It works by shuffling or removing the values of each feature in the input data and measuring the impact on the model&#x27;s predictions. The higher the impact, the more important the feature is for making predictions.<br><br>To do this, we will be using a Python package called <a href="https://captum.ai/docs/introduction">Captum</a>, which is a model interpretability library for PyTorch. It is an easy to use tool for understanding the decisions made by a neural network. It is also a great tool for debugging and improving models.<br><br>The main focus of the lesson will be with images, however the final section will cover tabular data to demonstrate the generalisability of the methods.</p>
+        <div class="info-box note-box">
+            <div class="box-title">
+                <span class="box-icon"></span>
+                NOTE
+            </div>
+            <div class="box-content">
+                <p>Whilst we will be using Captum for images and tabular data in this lesson, Captum also works with text data, pre-trained models, regression tasks, and large language models.</p>
+            </div>
+        </div>
+        
+                </div>
+            </div>
+            
+            <div class="module-card" id="setup">
+                <div class="module-body">
+                    <div class="module-section">
+                        <h3>Setup</h3>
+                        <p>In this activity we will utilise the model we trained in the previous lesson on <strong>CNNs</strong>, to explore and interpret the predictions using the <strong>occlusion</strong> method from <strong>Captum</strong>.<br><br>To replicate the model we made previously we will need to re-intialise the model architecture, load the previously trained weights (parameters), append to to our model.<br><br>First we will import the suite of packages we used in the previous lesson.</p>
+        <div class="code-area">
+            <div class="code-container code-fixed">
+                <pre><code class="language-python" id="code-1"># Import the modules required:
+import torch # this is the PyTorch module
+import torch.nn as nn # this is the neural network module
+
+import warnings
+warnings.filterwarnings(&quot;ignore&quot;) # this is to ignore warnings
+
+# Import the MNIST dataset
+from torchvision import datasets, transforms
+import torch.utils.data as data
+
+# Import the matplotlib module
+import matplotlib.pyplot as plt
+from matplotlib.colors import LinearSegmentedColormap
+
+# Import the numpy module
+import numpy as np
+
+# import medmnist, the medical image dataset
+import medmnist
+
+# fix the numpy and torch seeds for reproducibility:
+SEED = 999
+np.random.seed(SEED)
+torch.manual_seed(SEED)
+torch.cuda.manual_seed(SEED)</code></pre>
+            </div>
+            
+        </div>
+        <p>And we will also download and store the data from the <code>pathmnist</code> dataset, which are colons pathology samples.</p>
+        <div class="code-area">
+            <div class="code-container code-fixed">
+                <pre><code class="language-python" id="code-2">data_flag = &#x27;pathmnist&#x27;
+
+info = medmnist.INFO[data_flag]
+task = info[&#x27;task&#x27;]
+n_channels = info[&#x27;n_channels&#x27;]
+n_classes = len(info[&#x27;label&#x27;])
+
+print(f&quot;The learning task is {task}&quot;)
+print(f&quot;The number of channels is {n_channels}&quot;)
+print(f&quot;The number of classes is {n_classes}&quot;)</code></pre>
+            </div>
+            <div class="output-container"><pre class="output-stream">The learning task is multi-class
+The number of channels is 3
+The number of classes is 9
+</pre></div>
+        </div>
+        
+        <div class="code-area">
+            <div class="code-container code-fixed">
+                <pre><code class="language-python" id="code-3">download = False
+BATCH_SIZE = 128
+
+DataClass = getattr(medmnist, info[&#x27;python_class&#x27;])
+
+# preprocessing
+data_transform = transforms.Compose([
+    transforms.ToTensor(),
+    transforms.Normalize(mean=[.5], std=[.5]) # normalise the data with standard values
+])
+
+train_loader = torch.utils.data.DataLoader(
+    DataClass(split=&#x27;train&#x27;, 
+                transform=data_transform, 
+                download=download, 
+                root=&#x27;data&#x27;),
+    batch_size=BATCH_SIZE, shuffle=True)
+
+# load the data
+test_loader = torch.utils.data.DataLoader(
+    DataClass(split=&#x27;test&#x27;, 
+                transform=data_transform, 
+                download=download, 
+                root=&#x27;data&#x27;),
+    batch_size=2*BATCH_SIZE)</code></pre>
+            </div>
+            
+        </div>
+        <p>To recreate our model, we simply execute the code containing the same neural network architecture as before.</p>
+        <div class="code-area">
+            <div class="code-container code-fixed">
+                <pre><code class="language-python" id="code-4">class CNN_Pathology(nn.Module):
+    def __init__(self, in_channels, num_classes):
+        super().__init__()
+
+        self.layer1 = nn.Sequential(
+            # Input image: 28x28, Ouput image: 28 - 3 + 1 = 26x26
+            nn.Conv2d(in_channels, 16, kernel_size=3), 
+            nn.BatchNorm2d(16),
+            nn.ReLU())
+
+        self.layer2 = nn.Sequential(
+            # Input image: 26x26, Ouput image: (26 - 3 + 1) / 2 = 12x12
+            nn.Conv2d(16, 16, kernel_size=3), 
+            nn.BatchNorm2d(16),
+            nn.ReLU(),
+            nn.MaxPool2d(kernel_size=2, stride=2))
+
+        self.layer3 = nn.Sequential(
+            # Input image: 12x12, Ouput image: 12 - 3 + 1 = 10x10
+            nn.Conv2d(16, 64, kernel_size=3),
+            nn.BatchNorm2d(64),
+            nn.ReLU())
+        
+        self.layer4 = nn.Sequential(
+            # Input image: 10x10, Ouput image: 10 - 3 + 1 = 8x8
+            nn.Conv2d(64, 64, kernel_size=3),
+            nn.BatchNorm2d(64),
+            nn.ReLU())
+
+        self.layer5 = nn.Sequential(
+            # Input image: 8x8, Ouput image: (8 - 3 + 1) / 2 = 4x4
+            nn.Conv2d(64, 64, kernel_size=3, padding=1),
+            nn.BatchNorm2d(64),
+            nn.ReLU(),
+            nn.MaxPool2d(kernel_size=2, stride=2))
+
+        self.fc = nn.Sequential(
+            nn.Linear(64 * 4 * 4, 128), # 64 feature maps x spatial dimensions (4x4)
+            nn.ReLU(),
+            # a dropout layer is added here to avoid overfitting
+            nn.Dropout(p=0.6),
+            nn.Linear(128, 128),
+            nn.ReLU(),
+            # a dropout layer is added here to avoid overfitting
+            nn.Dropout(p=0.6),
+            nn.Linear(128, num_classes))
+
+    def forward(self, x):
+        out = nn.Sequential(
+            self.layer1,
+            self.layer2,
+            self.layer3,
+            self.layer4,
+            self.layer5)(x)
+        out = out.reshape(out.size(0), -1)
+        out = self.fc(out)
+        return out</code></pre>
+            </div>
+            
+        </div>
+        <h4>Loading a saved model</h4><p>At the end of the previous lesson we saved the parameters of the best performing model to a <code>.pth</code> file. If we want to use this model again, to predict on new data or for further training, it can be loaded back into your envrionment by updating the <strong>state</strong> of a newly intialised neural net class.</p>
+        <div class="info-box remember-box">
+            <div class="box-title">
+                <span class="box-icon"></span>
+                REMEMBER
+            </div>
+            <div class="box-content">
+                <p>Saved parameters can only be loaded into a neural net class that has the same architecture as the previous model. So don&#x27;t lose the code that defined your model the first time!</p>
+            </div>
+        </div>
+        
+        <div class="code-area">
+            <div class="code-container code-fixed">
+                <pre><code class="language-python" id="code-5"># Define the device
+# Check if GPU is available
+if torch.cuda.is_available():
+    # if there are multiple GPUs, choose the first one
+    device = torch.device(f&quot;cuda:0&quot;)
+    print(f&#x27;There are {torch.cuda.device_count()} GPU(s) available.&#x27;)
+    print(f&#x27;Device name: {torch.cuda.get_device_name(0)}&#x27;)
+else:
+    print(&quot;No GPU detected! Falling back to CPU&quot;)
+    # If the GPU is not available, use the CPU
+    device = torch.device(&quot;cpu&quot;)
+    
+
+# then define the model (architecture above) and move it to the device:
+model = CNN_Pathology(in_channels=n_channels, num_classes=n_classes)
+
+# load the trained model that we saved in the last lesson, instead of having to train it again:
+model.load_state_dict(torch.load(&#x27;./data/best_model.pth&#x27;))
+model = model.to(device)</code></pre>
+            </div>
+            <div class="output-container"><pre class="output-stream">No GPU detected! Falling back to CPU
+</pre></div>
+        </div>
+        <p>Now everything is loaded in, we can view our model predictions to remind us of what we&#x27;re working with:</p>
+        <div class="code-area">
+            <div class="code-container code-fixed">
+                <pre><code class="language-python" id="code-6"># load all the test set images and labels into memory:
+test_images = []
+test_labels = []
+for images, labels in test_loader:
+    test_images.append(images)
+    test_labels.append(labels)
+test_images = torch.cat(test_images, dim=0)
+test_labels = torch.cat(test_labels, dim=0)</code></pre>
+            </div>
+            
+        </div>
+        
+        <div class="code-area">
+            <div class="code-container code-fixed">
+                <pre><code class="language-python" id="code-7">real_labels = {
+            0: &quot;adipose&quot;,
+            1: &quot;background&quot;,
+            2: &quot;debris&quot;,
+            3: &quot;lymphocytes&quot;,
+            4: &quot;mucus&quot;,
+            5: &quot;smooth muscle&quot;,
+            6: &quot;normal colon mucosa&quot;,
+            7: &quot;cancer-associated stroma&quot;,
+            8: &quot;crc adenocarcinoma epithelium&quot;
+        }</code></pre>
+            </div>
+            
+        </div>
+        
+        <div class="code-area">
+            <div class="code-container code-fixed">
+                <pre><code class="language-python" id="code-8"># obtain one batch of test images
+dataiter = iter(test_loader)
+images, labels = next(dataiter)
+images = images.numpy()
+
+# move model inputs to cuda, if GPU available
+images = torch.from_numpy(images)
+images = images.to(device)
+labels = labels.to(device)
+
+# get sample outputs
+model.eval() # set model to evaluation mode
+output = model(images)
+
+# convert output probabilities to predicted class
+_, preds = torch.max(output, 1)
+
+# prep images for display
+images = images.cpu().numpy()
+
+# plot the images in the batch, along with predicted and true labels
+fig = plt.figure(figsize=(18, 6))
+
+for idx in np.arange(10):
+    # get the real labels of the pathology images
+    # and use these real labels to annotate the images
+    ax = fig.add_subplot(2, 5, idx+1, xticks=[], yticks=[])
+    plt.imshow(np.clip(np.transpose(images[idx], (1, 2, 0)), 0, 1))
+    ax.set_title(f&quot;{real_labels[int(preds[preds[idx]].cpu().numpy())]}&quot;, color=(&quot;green&quot; if preds[idx]==labels[idx] else &quot;red&quot;))
+
+# add super title:
+fig.suptitle(&#x27;Correct classifications in green and incorrect in red text&#x27;, fontsize=20)
+plt.show()</code></pre>
+            </div>
+            <div class="output-container"><pre class="output-error">NameError on line 4: name &#x27;test_loader&#x27; is not defined</pre></div>
+        </div>
+        
+                    </div>
+                </div>
+            </div>
+            
+            <div class="module-card" id="occlusion-introduction">
+                <div class="module-body">
+                    <div class="module-section">
+                        <h3>Occlusion introduction</h3>
+                        <p>To start off, we can use an explainability method called <strong>Occlusion</strong>. This is a visualisation technique that can be used to understand the importance of different regions of an image in the model&#x27;s prediction.<br><br>It does this by occluding (hiding) different regions of the image and observing the effect on the model&#x27;s prediction. If the model&#x27;s prediction changes a lot when a region is occluded, then that region is important for the model&#x27;s prediction. If the model&#x27;s prediction does not change a lot when a region is occluded, then that region is not important for the model&#x27;s prediction.<br></p><p><img src="./images/occlusion.png" alt="Occlusion Diagram" class="notebook-image"></p><p>For this demonstration lets only consider the samples that were classified <strong>correctly</strong> by the model.</p>
+        <div class="code-area">
+            <div class="code-container code-fixed">
+                <pre><code class="language-python" id="code-9">correct_indices = []
+for i in range(len(labels)):
+    if preds[i] == labels[i]:
+        correct_indices.append(i)
+
+# shuffle the correct indices list:
+np.random.shuffle(correct_indices)</code></pre>
+            </div>
+            
+        </div>
+        <p>From the <strong>Captum</strong> package we import the Occlusion class. The occlusiosion class will determine the importance of each <strong>pixel</strong> in the models prediction.</p>
+        <div class="code-area">
+            <div class="code-container code-fixed">
+                <pre><code class="language-python" id="code-10">from captum.attr import Occlusion</code></pre>
+            </div>
+            
+        </div>
+        
+                    </div>
+                </div>
+            </div>
+            
+            <div class="module-card" id="implementing-occlusion">
+                <div class="module-body">
+                    <div class="module-section">
+                        <h3>Implementing Occlusion</h3>
+                        <p>After intialising the <a href="https://captum.ai/api/occlusion.html"><strong>Occlusion</strong> class</a> with our model, we need to define the window <em>shape</em> and and its <em>stride</em>. This is very similar to the kernel defined for the convolutional layer, as in we choose the height and width of the window and how much it should move along the image (<em>stride</em>).<br><br>The difference is we also need to declare the number of channels, as it needs to block all of the pixels in the Z-axis (channel).</p>
+        <div class="code-area">
+            <div class="code-container code-fixed">
+                <pre><code class="language-python" id="code-11"># define the occlusion interpreter
+occlusion = Occlusion(model)
+
+# define the sliding window size for the occlusion interpreter
+sliding_window_shapes = (3, 2, 2) # (channels, height, width)
+
+# # define the stride for the occlusion interpreter
+strides = (3, 1, 1)               # (channel_stride, height_stride, width_stride)</code></pre>
+            </div>
+            
+        </div>
+        
+        <div class="code-area">
+            <div class="code-container code-fixed">
+                <pre><code class="language-python" id="code-12"># Load in a single image from the correctly predicted images for demonstration
+
+# select an image from correct_indices
+IMAGE_INDEX = 11
+
+# Download and uncomment the below to view other random images
+# IMAGE_INDEX = np.random.choice(correct_indices)
+
+# Pick image and its label
+original_image = test_images[IMAGE_INDEX].unsqueeze(0) # get image
+original_label = test_labels[IMAGE_INDEX] # get label 
+
+# move the image and label to the device
+original_image = original_image.to(device)
+original_label = original_label.to(device)</code></pre>
+            </div>
+            
+        </div>
+        <p>We can now use the occlusion interpreter to infer the importance of each pixel in the image for the model’s prediction. First, we get the prediction for our image which we give to the occulsion class along with the window and stride.</p>
+        <div class="code-area">
+            <div class="code-container code-fixed">
+                <pre><code class="language-python" id="code-13"># get the prediction of the model for the image
+model.eval() # set model to evaluation mode
+output = model(original_image)
+_, pred_class = torch.max(output, 1) # convert output probabilities to predicted class
+
+# run the occlusion interpreter on the image
+attributions_occ = occlusion.attribute(original_image,
+                                        strides=strides,
+                                        target=pred_class,
+                                        sliding_window_shapes=sliding_window_shapes,
+                                        )
+
+
+# pred class in text:
+pred_class_text = real_labels[pred_class.cpu().numpy()[0]]
+# real label in text:
+real_label_text = real_labels[original_label.cpu().numpy()[0]]</code></pre>
+            </div>
+            
+        </div>
+        <h4>Visualisation</h4><p>To best understand which pixels are important we can visualise the feature importance as a heatmap. The numbers given from the <code>Occlusion</code> class can be roughly binned into 3 categories:<br><ul class="nested-list"><li><strong>Positive values</strong> (green): Being regions that <strong>support</strong> the predicted class. When these areas are occluded (hidden), the model&#x27;s confidence in the prediction decreases.</li><br><li><strong>Negative values</strong> (red): Regions that <strong>contradict</strong> the predicted class. When these areas are occluded, the model&#x27;s confidence actually increases (meaning these regions were working against the prediction).</li><br><li><strong>Around zero</strong> (white): Regions that have little to no impact on the prediction. Occluding them doesn&#x27;t significantly change the model&#x27;s output.</li></ul></p><p>First we need to augment our data so that it can be given to matplotlib:</p>
+        <div class="code-area">
+            <div class="code-container code-fixed">
+                <pre><code class="language-python" id="code-14"># detach the data from the PyTorch tensor
+attributions_data = attributions_occ.squeeze(0).detach().cpu().numpy() # .squeeze(0) removes the first singular dimension 
+attributions_data = attributions_data[0] # We only need 1 channel
+
+plot_image = np.clip(np.transpose(original_image.cpu().numpy()[0], (1, 2, 0)), 0, 1)</code></pre>
+            </div>
+            
+        </div>
+        
+        <div class="info-box tip-box">
+            <div class="box-title">
+                <span class="box-icon"></span>
+                TIP
+            </div>
+            <div class="box-content">
+                <p>The augmentation of the images for plotting may be a bit confusing to beginners, so we will break it down step by step:<br><br><pre class="markdown-code-block"><code>plot_image = np.clip(np.transpose(original_image.cpu().numpy()[0], (1, 2, 0)), 0, 1)
+
+np.clip(..., 0, 1) # As we have nomalised the images, the pixel values will be wrong. We therefore rescale to between 0 and 1
+
+image.cpu().numpy()[0] # PyTorch → NumPy and remove an unnecessary dimension
+
+# For matplotlib we need the channels to be last, not first, so we transpose the image
+np.transpose(..., (1, 2, 0)) # (C,H,W) → (H,W,C) for matplotlib</code></pre></p>
+            </div>
+        </div>
+        
+        <div class="code-area">
+            <div class="code-container code-fixed">
+                <pre><code class="language-python" id="code-15"># Create our own red, white, green colour map for plotting
+cmap=LinearSegmentedColormap.from_list(&#x27;rg&#x27;,[&quot;r&quot;, &quot;w&quot;, &quot;g&quot;], N=256)
+
+# plot the image and the attributions in a side by side manner as a subplot
+fig, ax = plt.subplots(1, 3, figsize=(16, 4))
+ax[0].imshow(plot_image) # See explination below
+ax[0].set_title(f&quot;Predicted: {pred_class_text} \n Real: {real_label_text}&quot;)
+
+
+ax[1].imshow(attributions_data, cmap=cmap)
+ax[1].set_title(&quot;Explainability attributions&quot;)
+
+# make an overlay of the image and the attributions
+ax[2].imshow(plot_image)
+ax[2].imshow(attributions_data, cmap=cmap, alpha=0.1)
+ax[2].set_title(&quot;Overlay&quot;)
+
+# put a colorbar on the side
+fig.colorbar(ax[2].imshow(attributions_data, cmap=cmap, alpha=0.5), ax=ax[2])
+
+plt.show()
+</code></pre>
+            </div>
+            <div class="output-container"><pre class="output-error">NameError on line 8: name &#x27;plot_image&#x27; is not defined</pre><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAABRYAAAFlCAYAAACeIrSiAAAAOnRFWHRTb2Z0d2FyZQBNYXRwbG90bGliIHZlcnNpb24zLjEwLjgsIGh0dHBzOi8vbWF0cGxvdGxpYi5vcmcvwVt1zgAAAAlwSFlzAAAPYQAAD2EBqD+naQAAI+NJREFUeJzt3W9sXfV9P/CP48Q2qNiEZXH+zDSDjtIWSGhCPEMRovJqCZQuD6ZmUCVZxJ/RZojG2kpCIC6ljTMGKFIJjUhh9EFZ0iJAVROZMq9RRfEUNYklOhIQTWiyqjbJOuwstDaxz+9BVfMzcXLyNb73xub1ku6DnJzj+7lf2eet8/bxvWVZlmUBAAAAAJBgUqkHAAAAAADGH8UiAAAAAJBMsQgAAAAAJFMsAgAAAADJFIsAAAAAQDLFIgAAAACQTLEIAAAAACRTLAIAAAAAyRSLAAAAAEAyxSIAAAAAkCy5WPzpT38aixYtilmzZkVZWVk8//zzucfs3LkzPv3pT0dlZWV87GMfi6eeemoUowLA2JJpAEwkcg2AYksuFo8fPx5z586NTZs2ndH+Bw8ejBtvvDGuv/766OzsjK985Stx6623xgsvvJA8LACMJZkGwEQi1wAotrIsy7JRH1xWFs8991wsXrz4lPvcfffdsX379vjFL34xtO1v//Zv4+233462trbRPjUAjCmZBsBEItcAKIbJhX6Cjo6OaGxsHLatqakpvvKVr5zymL6+vujr6xv69+DgYPz2t7+NP/mTP4mysrJCjQrAB5RlWRw7dixmzZoVkyZNvLfxlWkAHy5y7WRyDWD8KkSuFbxY7Orqitra2mHbamtro7e3N373u9/FOeecc9Ixra2tcf/99xd6NAAK5PDhw/Fnf/ZnpR5jzMk0gA8nufYeuQYw/o1lrhW8WByNNWvWRHNz89C/e3p64sILL4zDhw9HdXV1CScD4HR6e3ujrq4uzjvvvFKPctaQaQDjl1w7mVwDGL8KkWsFLxZnzJgR3d3dw7Z1d3dHdXX1iL8Bi4iorKyMysrKk7ZXV1cLK4BxYKL+KZRMA/hwkmvvkWsA499Y5lrB3yikoaEh2tvbh2178cUXo6GhodBPDQBjSqYBMJHINQA+qORi8f/+7/+is7MzOjs7IyLi4MGD0dnZGYcOHYqIP9wav2zZsqH977jjjjhw4EB89atfjf3798djjz0W3//+92PVqlVj8woAYJRkGgATiVwDoNiSi8Wf//znceWVV8aVV14ZERHNzc1x5ZVXxrp16yIi4je/+c1QcEVE/Pmf/3ls3749XnzxxZg7d248/PDD8Z3vfCeamprG6CUAwOjINAAmErkGQLGVZVmWlXqIPL29vVFTUxM9PT3etwPgLOZ8nc8aAYwfztn5rBHA+FGIc3bB32MRAAAAAJh4FIsAAAAAQDLFIgAAAACQTLEIAAAAACRTLAIAAAAAyRSLAAAAAEAyxSIAAAAAkEyxCAAAAAAkUywCAAAAAMkUiwAAAABAMsUiAAAAAJBMsQgAAAAAJFMsAgAAAADJFIsAAAAAQDLFIgAAAACQTLEIAAAAACRTLAIAAAAAyRSLAAAAAEAyxSIAAAAAkEyxCAAAAAAkUywCAAAAAMkUiwAAAABAMsUiAAAAAJBMsQgAAAAAJFMsAgAAAADJFIsAAAAAQDLFIgAAAACQTLEIAAAAACRTLAIAAAAAyRSLAAAAAEAyxSIAAAAAkEyxCAAAAAAkUywCAAAAAMkUiwAAAABAMsUiAAAAAJBMsQgAAAAAJFMsAgAAAADJFIsAAAAAQDLFIgAAAACQTLEIAAAAACRTLAIAAAAAyRSLAAAAAEAyxSIAAAAAkEyxCAAAAAAkUywCAAAAAMkUiwAAAABAMsUiAAAAAJBMsQgAAAAAJFMsAgAAAADJFIsAAAAAQDLFIgAAAACQbFTF4qZNm2LOnDlRVVUV9fX1sWvXrtPuv3Hjxvj4xz8e55xzTtTV1cWqVavi97///agGBoCxJtcAmChkGgDFlFwsbtu2LZqbm6OlpSX27NkTc+fOjaampnjrrbdG3P/pp5+O1atXR0tLS+zbty+eeOKJ2LZtW9xzzz0feHgA+KDkGgAThUwDoNiSi8VHHnkkbrvttlixYkV88pOfjM2bN8e5554bTz755Ij7v/zyy3HNNdfEzTffHHPmzInPfe5zcdNNN+X+5gwAikGuATBRyDQAii2pWOzv74/du3dHY2Pje19g0qRobGyMjo6OEY+5+uqrY/fu3UPhdODAgdixY0fccMMNp3yevr6+6O3tHfYAgLFWjFyTaQAUg2s1AEphcsrOR48ejYGBgaitrR22vba2Nvbv3z/iMTfffHMcPXo0PvOZz0SWZXHixIm44447Tnt7fWtra9x///0powFAsmLkmkwDoBhcqwFQCgX/VOidO3fG+vXr47HHHos9e/bEs88+G9u3b48HHnjglMesWbMmenp6hh6HDx8u9JgAcEZSc02mAXC2cq0GwAeVdMfitGnTory8PLq7u4dt7+7ujhkzZox4zH333RdLly6NW2+9NSIiLr/88jh+/HjcfvvtsXbt2pg06eRus7KyMiorK1NGA4Bkxcg1mQZAMbhWA6AUku5YrKioiPnz50d7e/vQtsHBwWhvb4+GhoYRj3nnnXdOCqTy8vKIiMiyLHVeABgzcg2AiUKmAVAKSXcsRkQ0NzfH8uXLY8GCBbFw4cLYuHFjHD9+PFasWBEREcuWLYvZs2dHa2trREQsWrQoHnnkkbjyyiujvr4+3njjjbjvvvti0aJFQ6EFAKUi1wCYKGQaAMWWXCwuWbIkjhw5EuvWrYuurq6YN29etLW1Db1J8KFDh4b91uvee++NsrKyuPfee+PXv/51/Omf/mksWrQovvnNb47dqwCAUZJrAEwUMg2AYivLxsE97r29vVFTUxM9PT1RXV1d6nEAOAXn63zWCGD8cM7OZ40Axo9CnLML/qnQAAAAAMDEo1gEAAAAAJIpFgEAAACAZIpFAAAAACCZYhEAAAAASKZYBAAAAACSKRYBAAAAgGSKRQAAAAAgmWIRAAAAAEimWAQAAAAAkikWAQAAAIBkikUAAAAAIJliEQAAAABIplgEAAAAAJIpFgEAAACAZIpFAAAAACCZYhEAAAAASKZYBAAAAACSKRYBAAAAgGSKRQAAAAAgmWIRAAAAAEimWAQAAAAAkikWAQAAAIBkikUAAAAAIJliEQAAAABIplgEAAAAAJIpFgEAAACAZIpFAAAAACCZYhEAAAAASKZYBAAAAACSKRYBAAAAgGSKRQAAAAAgmWIRAAAAAEimWAQAAAAAkikWAQAAAIBkikUAAAAAIJliEQAAAABIplgEAAAAAJIpFgEAAACAZIpFAAAAACCZYhEAAAAASKZYBAAAAACSKRYBAAAAgGSKRQAAAAAgmWIRAAAAAEimWAQAAAAAkikWAQAAAIBkikUAAAAAIJliEQAAAABIplgEAAAAAJKNqljctGlTzJkzJ6qqqqK+vj527dp12v3ffvvtWLlyZcycOTMqKyvjkksuiR07doxqYAAYa3INgIlCpgFQTJNTD9i2bVs0NzfH5s2bo76+PjZu3BhNTU3x2muvxfTp00/av7+/P/7qr/4qpk+fHs8880zMnj07fvWrX8X5558/FvMDwAci1wCYKGQaAMVWlmVZlnJAfX19XHXVVfHoo49GRMTg4GDU1dXFnXfeGatXrz5p/82bN8e//Mu/xP79+2PKlCmjGrK3tzdqamqip6cnqqurR/U1ACi88Xi+Lnaujcc1AviwGm/nbNdqAJxOIc7ZSX8K3d/fH7t3747Gxsb3vsCkSdHY2BgdHR0jHvPDH/4wGhoaYuXKlVFbWxuXXXZZrF+/PgYGBk75PH19fdHb2zvsAQBjrRi5JtMAKAbXagCUQlKxePTo0RgYGIja2tph22tra6Orq2vEYw4cOBDPPPNMDAwMxI4dO+K+++6Lhx9+OL7xjW+c8nlaW1ujpqZm6FFXV5cyJgCckWLkmkwDoBhcqwFQCgX/VOjBwcGYPn16PP744zF//vxYsmRJrF27NjZv3nzKY9asWRM9PT1Dj8OHDxd6TAA4I6m5JtMAOFu5VgPgg0r68JZp06ZFeXl5dHd3D9ve3d0dM2bMGPGYmTNnxpQpU6K8vHxo2yc+8Yno6uqK/v7+qKioOOmYysrKqKysTBkNAJIVI9dkGgDF4FoNgFJIumOxoqIi5s+fH+3t7UPbBgcHo729PRoaGkY85pprrok33ngjBgcHh7a9/vrrMXPmzBGDCgCKRa4BMFHINABKIflPoZubm2PLli3x3e9+N/bt2xdf+tKX4vjx47FixYqIiFi2bFmsWbNmaP8vfelL8dvf/jbuuuuueP3112P79u2xfv36WLly5di9CgAYJbkGwEQh0wAotqQ/hY6IWLJkSRw5ciTWrVsXXV1dMW/evGhraxt6k+BDhw7FpEnv9ZV1dXXxwgsvxKpVq+KKK66I2bNnx1133RV333332L0KABgluQbARCHTACi2sizLslIPkae3tzdqamqip6cnqqurSz0OAKfgfJ3PGgGMH87Z+awRwPhRiHN2wT8VGgAAAACYeBSLAAAAAEAyxSIAAAAAkEyxCAAAAAAkUywCAAAAAMkUiwAAAABAMsUiAAAAAJBMsQgAAAAAJFMsAgAAAADJFIsAAAAAQDLFIgAAAACQTLEIAAAAACRTLAIAAAAAyRSLAAAAAEAyxSIAAAAAkEyxCAAAAAAkUywCAAAAAMkUiwAAAABAMsUiAAAAAJBMsQgAAAAAJFMsAgAAAADJFIsAAAAAQDLFIgAAAACQTLEIAAAAACRTLAIAAAAAyRSLAAAAAEAyxSIAAAAAkEyxCAAAAAAkUywCAAAAAMkUiwAAAABAMsUiAAAAAJBMsQgAAAAAJFMsAgAAAADJFIsAAAAAQDLFIgAAAACQTLEIAAAAACRTLAIAAAAAyRSLAAAAAEAyxSIAAAAAkEyxCAAAAAAkUywCAAAAAMkUiwAAAABAMsUiAAAAAJBMsQgAAAAAJFMsAgAAAADJFIsAAAAAQDLFIgAAAACQTLEIAAAAACRTLAIAAAAAyRSLAAAAAEAyxSIAAAAAkGxUxeKmTZtizpw5UVVVFfX19bFr164zOm7r1q1RVlYWixcvHs3TAkBByDUAJgqZBkAxJReL27Zti+bm5mhpaYk9e/bE3Llzo6mpKd56663THvfmm2/GP/7jP8a111476mEBYKzJNQAmCpkGQLElF4uPPPJI3HbbbbFixYr45Cc/GZs3b45zzz03nnzyyVMeMzAwEF/84hfj/vvvj4suuugDDQwAY0muATBRyDQAii2pWOzv74/du3dHY2Pje19g0qRobGyMjo6OUx739a9/PaZPnx633HLLGT1PX19f9Pb2DnsAwFgrRq7JNACKwbUaAKWQVCwePXo0BgYGora2dtj22tra6OrqGvGYl156KZ544onYsmXLGT9Pa2tr1NTUDD3q6upSxgSAM1KMXJNpABSDazUASqGgnwp97NixWLp0aWzZsiWmTZt2xsetWbMmenp6hh6HDx8u4JQAcGZGk2syDYCzkWs1AMbC5JSdp02bFuXl5dHd3T1se3d3d8yYMeOk/X/5y1/Gm2++GYsWLRraNjg4+Icnnjw5Xnvttbj44otPOq6ysjIqKytTRgOAZMXINZkGQDG4VgOgFJLuWKyoqIj58+dHe3v70LbBwcFob2+PhoaGk/a/9NJL45VXXonOzs6hx+c///m4/vrro7Oz023zAJSUXANgopBpAJRC0h2LERHNzc2xfPnyWLBgQSxcuDA2btwYx48fjxUrVkRExLJly2L27NnR2toaVVVVcdlllw07/vzzz4+IOGk7AJSCXANgopBpABRbcrG4ZMmSOHLkSKxbty66urpi3rx50dbWNvQmwYcOHYpJkwr61o0AMGbkGgAThUwDoNjKsizLSj1Ent7e3qipqYmenp6orq4u9TgAnILzdT5rBDB+OGfns0YA40chztl+XQUAAAAAJFMsAgAAAADJFIsAAAAAQDLFIgAAAACQTLEIAAAAACRTLAIAAAAAyRSLAAAAAEAyxSIAAAAAkEyxCAAAAAAkUywCAAAAAMkUiwAAAABAMsUiAAAAAJBMsQgAAAAAJFMsAgAAAADJFIsAAAAAQDLFIgAAAACQTLEIAAAAACRTLAIAAAAAyRSLAAAAAEAyxSIAAAAAkEyxCAAAAAAkUywCAAAAAMkUiwAAAABAMsUiAAAAAJBMsQgAAAAAJFMsAgAAAADJFIsAAAAAQDLFIgAAAACQTLEIAAAAACRTLAIAAAAAyRSLAAAAAEAyxSIAAAAAkEyxCAAAAAAkUywCAAAAAMkUiwAAAABAMsUiAAAAAJBMsQgAAAAAJFMsAgAAAADJFIsAAAAAQDLFIgAAAACQTLEIAAAAACRTLAIAAAAAyRSLAAAAAEAyxSIAAAAAkEyxCAAAAAAkUywCAAAAAMkUiwAAAABAMsUiAAAAAJBMsQgAAAAAJFMsAgAAAADJRlUsbtq0KebMmRNVVVVRX18fu3btOuW+W7ZsiWuvvTamTp0aU6dOjcbGxtPuDwDFJtcAmChkGgDFlFwsbtu2LZqbm6OlpSX27NkTc+fOjaampnjrrbdG3H/nzp1x0003xU9+8pPo6OiIurq6+NznPhe//vWvP/DwAPBByTUAJgqZBkCxlWVZlqUcUF9fH1dddVU8+uijERExODgYdXV1ceedd8bq1atzjx8YGIipU6fGo48+GsuWLTuj5+zt7Y2ampro6emJ6urqlHEBKKLxeL4udq6NxzUC+LAab+ds12oAnE4hztlJdyz29/fH7t27o7Gx8b0vMGlSNDY2RkdHxxl9jXfeeSfefffduOCCC9ImBYAxJtcAmChkGgClMDll56NHj8bAwEDU1tYO215bWxv79+8/o69x9913x6xZs4YF3vv19fVFX1/f0L97e3tTxgSAM1KMXJNpABSDazUASqGonwq9YcOG2Lp1azz33HNRVVV1yv1aW1ujpqZm6FFXV1fEKQHgzJxJrsk0AMYD12oAjEZSsTht2rQoLy+P7u7uYdu7u7tjxowZpz32oYceig0bNsSPf/zjuOKKK06775o1a6Knp2focfjw4ZQxAeCMFCPXZBoAxeBaDYBSSCoWKyoqYv78+dHe3j60bXBwMNrb26OhoeGUxz344IPxwAMPRFtbWyxYsCD3eSorK6O6unrYAwDGWjFyTaYBUAyu1QAohaT3WIyIaG5ujuXLl8eCBQti4cKFsXHjxjh+/HisWLEiIiKWLVsWs2fPjtbW1oiI+Od//udYt25dPP300zFnzpzo6uqKiIiPfOQj8ZGPfGQMXwoApJNrAEwUMg2AYksuFpcsWRJHjhyJdevWRVdXV8ybNy/a2tqG3iT40KFDMWnSezdCfvvb347+/v74m7/5m2Ffp6WlJb72ta99sOkB4AOSawBMFDINgGIry7IsK/UQeXp7e6OmpiZ6enrcag9wFnO+zmeNAMYP5+x81ghg/CjEObuonwoNAAAAAEwMikUAAAAAIJliEQAAAABIplgEAAAAAJIpFgEAAACAZIpFAAAAACCZYhEAAAAASKZYBAAAAACSKRYBAAAAgGSKRQAAAAAgmWIRAAAAAEimWAQAAAAAkikWAQAAAIBkikUAAAAAIJliEQAAAABIplgEAAAAAJIpFgEAAACAZIpFAAAAACCZYhEAAAAASKZYBAAAAACSKRYBAAAAgGSKRQAAAAAgmWIRAAAAAEimWAQAAAAAkikWAQAAAIBkikUAAAAAIJliEQAAAABIplgEAAAAAJIpFgEAAACAZIpFAAAAACCZYhEAAAAASKZYBAAAAACSKRYBAAAAgGSKRQAAAAAgmWIRAAAAAEimWAQAAAAAkikWAQAAAIBkikUAAAAAIJliEQAAAABIplgEAAAAAJIpFgEAAACAZIpFAAAAACCZYhEAAAAASKZYBAAAAACSKRYBAAAAgGSKRQAAAAAgmWIRAAAAAEimWAQAAAAAkikWAQAAAIBkikUAAAAAIJliEQAAAABINqpicdOmTTFnzpyoqqqK+vr62LVr12n3/8EPfhCXXnppVFVVxeWXXx47duwY1bAAUAhyDYCJQqYBUEzJxeK2bduiubk5WlpaYs+ePTF37txoamqKt956a8T9X3755bjpppvilltuib1798bixYtj8eLF8Ytf/OIDDw8AH5RcA2CikGkAFFtZlmVZygH19fVx1VVXxaOPPhoREYODg1FXVxd33nlnrF69+qT9lyxZEsePH48f/ehHQ9v+8i//MubNmxebN28+o+fs7e2Nmpqa6Onpierq6pRxASii8Xi+Lnaujcc1AviwGm/nbNdqAJxOIc7Zk1N27u/vj927d8eaNWuGtk2aNCkaGxujo6NjxGM6Ojqiubl52LampqZ4/vnnT/k8fX190dfXN/Tvnp6eiPjDAgBw9vrjeTrxd1YlU4xck2kA49d4yjXXagDkKUSuJRWLR48ejYGBgaitrR22vba2Nvbv3z/iMV1dXSPu39XVdcrnaW1tjfvvv/+k7XV1dSnjAlAi//M//xM1NTWlHiNXMXJNpgGMf+Mh11yrAXCmxjLXkorFYlmzZs2w35y9/fbb8dGPfjQOHTp01gd6qfT29kZdXV0cPnzYnyCcgjXKZ41Oz/rk6+npiQsvvDAuuOCCUo9y1pBp6fys5bNG+axRPmuUT66dTK6l87OWzxrls0b5rFG+QuRaUrE4bdq0KC8vj+7u7mHbu7u7Y8aMGSMeM2PGjKT9IyIqKyujsrLypO01NTW+OXJUV1dboxzWKJ81Oj3rk2/SpOTPBiuJYuSaTBs9P2v5rFE+a5TPGuUbD7nmWu3s52ctnzXKZ43yWaN8Y5lrSV+poqIi5s+fH+3t7UPbBgcHo729PRoaGkY8pqGhYdj+EREvvvjiKfcHgGKRawBMFDINgFJI/lPo5ubmWL58eSxYsCAWLlwYGzdujOPHj8eKFSsiImLZsmUxe/bsaG1tjYiIu+66K6677rp4+OGH48Ybb4ytW7fGz3/+83j88cfH9pUAwCjINQAmCpkGQLElF4tLliyJI0eOxLp166KrqyvmzZsXbW1tQ2/6e+jQoWG3VF599dXx9NNPx7333hv33HNP/MVf/EU8//zzcdlll53xc1ZWVkZLS8uIt9zzB9YonzXKZ41Oz/rkG49rVOxcG49rVGzWKJ81ymeN8lmjfONtjVyrnZ2sUT5rlM8a5bNG+QqxRmXZWH7GNAAAAADwoXD2vwsxAAAAAHDWUSwCAAAAAMkUiwAAAABAMsUiAAAAAJDsrCkWN23aFHPmzImqqqqor6+PXbt2nXb/H/zgB3HppZdGVVVVXH755bFjx44iTVo6KWu0ZcuWuPbaa2Pq1KkxderUaGxszF3TiSD1++iPtm7dGmVlZbF48eLCDlhiqevz9ttvx8qVK2PmzJlRWVkZl1xyyYT/WUtdo40bN8bHP/7xOOecc6Kuri5WrVoVv//974s0bfH99Kc/jUWLFsWsWbOirKwsnn/++dxjdu7cGZ/+9KejsrIyPvaxj8VTTz1V8DlLTablk2n5ZFo+uZZPrp2eXDszci2fXMsn1/LJtXxy7dRKlmnZWWDr1q1ZRUVF9uSTT2b/9V//ld12223Z+eefn3V3d4+4/89+9rOsvLw8e/DBB7NXX301u/fee7MpU6Zkr7zySpEnL57UNbr55puzTZs2ZXv37s327duX/d3f/V1WU1OT/fd//3eRJy+e1DX6o4MHD2azZ8/Orr322uyv//qvizNsCaSuT19fX7ZgwYLshhtuyF566aXs4MGD2c6dO7POzs4iT148qWv0ve99L6usrMy+973vZQcPHsxeeOGFbObMmdmqVauKPHnx7NixI1u7dm327LPPZhGRPffcc6fd/8CBA9m5556bNTc3Z6+++mr2rW99KysvL8/a2tqKM3AJyLR8Mi2fTMsn1/LJtXxyLZ9cyyfX8sm1fHItn1w7vVJl2llRLC5cuDBbuXLl0L8HBgayWbNmZa2trSPu/4UvfCG78cYbh22rr6/P/v7v/76gc5ZS6hq934kTJ7Lzzjsv++53v1uoEUtuNGt04sSJ7Oqrr86+853vZMuXL5/QYZW6Pt/+9reziy66KOvv7y/WiCWXukYrV67MPvvZzw7b1tzcnF1zzTUFnfNscSZh9dWvfjX71Kc+NWzbkiVLsqampgJOVloyLZ9MyyfT8sm1fHItjVwbmVzLJ9fyybV8ci2fXDtzxcy0kv8pdH9/f+zevTsaGxuHtk2aNCkaGxujo6NjxGM6OjqG7R8R0dTUdMr9x7vRrNH7vfPOO/Huu+/GBRdcUKgxS2q0a/T1r389pk+fHrfccksxxiyZ0azPD3/4w2hoaIiVK1dGbW1tXHbZZbF+/foYGBgo1thFNZo1uvrqq2P37t1Dt98fOHAgduzYETfccENRZh4PnK9l2vvJtHwyLZ9cyyfXCsM5W669n1zLJ9fyybV8cm3sjdX5evJYDjUaR48ejYGBgaitrR22vba2Nvbv3z/iMV1dXSPu39XVVbA5S2k0a/R+d999d8yaNeukb5qJYjRr9NJLL8UTTzwRnZ2dRZiwtEazPgcOHIj/+I//iC9+8YuxY8eOeOONN+LLX/5yvPvuu9HS0lKMsYtqNGt08803x9GjR+Mzn/lMZFkWJ06ciDvuuCPuueeeYow8LpzqfN3b2xu/+93v4pxzzinRZIUh0/LJtHwyLZ9cyyfXCkOu/YFce49cyyfX8sm1fHJt7I1VppX8jkUKb8OGDbF169Z47rnnoqqqqtTjnBWOHTsWS5cujS1btsS0adNKPc5ZaXBwMKZPnx6PP/54zJ8/P5YsWRJr166NzZs3l3q0s8bOnTtj/fr18dhjj8WePXvi2Wefje3bt8cDDzxQ6tFgwpJpJ5NpZ0au5ZNrUHxy7WRy7czItXxyrThKfsfitGnTory8PLq7u4dt7+7ujhkzZox4zIwZM5L2H+9Gs0Z/9NBDD8WGDRvi3//93+OKK64o5JgllbpGv/zlL+PNN9+MRYsWDW0bHByMiIjJkyfHa6+9FhdffHFhhy6i0XwPzZw5M6ZMmRLl5eVD2z7xiU9EV1dX9Pf3R0VFRUFnLrbRrNF9990XS5cujVtvvTUiIi6//PI4fvx43H777bF27dqYNMnvbk51vq6urp5wd3VEyLQzIdPyybR8ci2fXCsMufYHcu09ci2fXMsn1/LJtbE3VplW8lWsqKiI+fPnR3t7+9C2wcHBaG9vj4aGhhGPaWhoGLZ/RMSLL754yv3Hu9GsUUTEgw8+GA888EC0tbXFggULijFqyaSu0aWXXhqvvPJKdHZ2Dj0+//nPx/XXXx+dnZ1RV1dXzPELbjTfQ9dcc0288cYbQyEeEfH666/HzJkzJ1xIRYxujd55552TwuiPwf6H98vF+VqmvZ9MyyfT8sm1fHKtMJyz5dr7ybV8ci2fXMsn18bemJ2vkz7qpUC2bt2aVVZWZk899VT26quvZrfffnt2/vnnZ11dXVmWZdnSpUuz1atXD+3/s5/9LJs8eXL20EMPZfv27ctaWlqyKVOmZK+88kqpXkLBpa7Rhg0bsoqKiuyZZ57JfvOb3ww9jh07VqqXUHCpa/R+E/2TxlLX59ChQ9l5552X/cM//EP22muvZT/60Y+y6dOnZ9/4xjdK9RIKLnWNWlpasvPOOy/7t3/7t+zAgQPZj3/84+ziiy/OvvCFL5TqJRTcsWPHsr1792Z79+7NIiJ75JFHsr1792a/+tWvsizLstWrV2dLly4d2v/AgQPZueeem/3TP/1Ttm/fvmzTpk1ZeXl51tbWVqqXUHAyLZ9MyyfT8sm1fHItn1zLJ9fyybV8ci2fXMsn106vVJl2VhSLWZZl3/rWt7ILL7wwq6ioyBYuXJj953/+59D/XXfdddny5cuH7f/9738/u+SSS7KKiorsU5/6VLZ9+/YiT1x8KWv00Y9+NIuIkx4tLS3FH7yIUr+P/n8fhrBKXZ+XX345q6+vzyorK7OLLroo++Y3v5mdOHGiyFMXV8oavfvuu9nXvva17OKLL86qqqqyurq67Mtf/nL2v//7v8UfvEh+8pOfjHhu+eO6LF++PLvuuutOOmbevHlZRUVFdtFFF2X/+q//WvS5i02m5ZNp+WRaPrmWT66dnlw7M3Itn1zLJ9fyybV8cu3USpVpZVnm/k8AAAAAIE3J32MRAAAAABh/FIsAAAAAQDLFIgAAAACQTLEIAAAAACRTLAIAAAAAyRSLAAAAAEAyxSIAAAAAkEyxCAAAAAAkUywCAAAAAMkUiwAAAABAMsUiAAAAAJBMsQgAAAAAJPt/o7Z+XIy1SBkAAAAASUVORK5CYII=" class="output-image" width="1302" height="357" /></div>
+        </div>
+        <h4>Plotting issues</h4><p>Plotting it ourselves can cause issues when we wish to visually compare multiple images. This is becuase the colourbar is automatically adjusted to the range of values. Here, pixels that are <code>0</code> are coloured red, which would signal at a glance that they were negatively affecting the prediction. Whereas, we know this should mean it has little impact either for or against.<br><br>To prevent this, we could rescale our colour bar. Or we can use <a href="https://captum.ai/api/utilities.html#visualization">Captums</a> built in visualisation tools, which handle this for us given their knowledge of the numerical limits of the output. This toolkit is build ontop of <em>Matplotlib</em>.</p>
+        <div class="code-area">
+            <div class="code-container code-fixed">
+                <pre><code class="language-python" id="code-16"># THe Captum visualisation module
+from captum.attr import visualization as viz</code></pre>
+            </div>
+            
+        </div>
+        
+        <div class="code-area">
+            <div class="code-container code-fixed">
+                <pre><code class="language-python" id="code-17"># The occlusion data must be transposed to work the visualisation module
+attributions_data = np.transpose(attributions_occ.squeeze(0).cpu().detach().numpy(), (1,2,0))
+
+# Extract the figure and axes from the visualisation
+fig, ax = viz.visualize_image_attr_multiple(attributions_data, # the same numbers
+                                      plot_image, # the same image
+                                      [&#x27;original_image&#x27;, &#x27;heat_map&#x27;, &#x27;masked_image&#x27;], # image type
+                                      [&quot;all&quot;, &quot;all&quot;, &quot;positive&quot;], # values to show
+                                      show_colorbar=True,
+                                      use_pyplot=False, # allows us to customise the figure
+                                      fig_size=(14, 4));
+
+
+fig.tight_layout()
+
+ax[0].set_title(f&quot;Predicted: {pred_class_text} \n Real: {real_label_text}&quot;)
+ax[1].set_title(&quot;Adjusted Explainability attributions&quot;)
+ax[2].set_title(&quot;Masked Overlay&quot;)
+
+fig</code></pre>
+            </div>
+            <div class="output-container"><pre class="output-error">NameError on line 4: name &#x27;attributions_occ&#x27; is not defined</pre></div>
+        </div>
+        <p>Using the <strong>Captum</strong> visualtion tool we gain a better understanding of the true influencing features in the image. Here we can see the central to bottom left region is most predictive of the class with the remainder unaffecting the prediction. It is an important reminder to always pay attention to the scale of a colourmap when cross-comparing different visualisations.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="module-card" id="occluding-segments">
+                <div class="module-body">
+                    <div class="module-section">
+                        <h3>Occluding segments</h3>
+                        <h4>Moving Beyond Pixel-Level Heatmaps</h4><p>Heatmaps are useful for showing which parts of an image influence the model&#x27;s decision, but they have limitations. They highlight important regions without explaining what the AI has actually learnt about those areas. To gain deeper insights, we should move beyond individual pixels and analyse meaningful regions of the image.<br><br>Ideally, we would analyse images at the level of distinct objects or structures. In medical imaging, expert pathologists sometimes provide pixel-level annotations that identify every structure in an image - this is called supervised segmentation. However, such detailed annotations are expensive and time-consuming to create.<br><br>When we don&#x27;t have expert annotations, we can use unsupervised segmentation to automatically divide the image into meaningful regions. This allows us to analyse how the AI interprets different structures without requiring pre-labelled data.</p><h4>Our Approach: Unsupervised Segmentation</h4><p>We&#x27;ll use a two-step process to segment our pathology images:<br><br><strong>Step 1 Binarisation:</strong> We separate the tissue (foreground) from the background using Otsu&#x27;s thresholding method. This technique automatically finds the optimal threshold by assuming the image contains two classes of pixels and minimising the variance within each class.<br><br><strong>Step 2: Connected Component Analysis:</strong> Next, we identify distinct regions in the binarised image. This method groups together neighbouring pixels that belong to the same structure, giving each region a unique label. These labelled regions become our units of analysis for the explainability method.</p>
+        <div class="code-area">
+            <div class="code-container code-fixed">
+                <pre><code class="language-python" id="code-18">import cv2
+from skimage.filters import threshold_otsu</code></pre>
+            </div>
+            
+        </div>
+        
+        <div class="info-box fact-box">
+            <div class="box-title">
+                <span class="box-icon"></span>
+                FACT
+            </div>
+            <div class="box-content">
+                <p><a href="https://opencv.org/">cv2</a> or OpenCV is a powerful and open source computer vision library that can be used for image and video processing.</p>
+            </div>
+        </div>
+        <h4>Step 1</h4><p>First the image is converted to greyscale. Next, the <a href="https://scikit-image.org/docs/0.23.x/auto_examples/segmentation/plot_thresholding.html">threshhold_otsu</a> provides a <em>threshold</em> value, which it calculates best seperates the foreground from the background.</p>
+        <div class="code-area">
+            <div class="code-container code-fixed">
+                <pre><code class="language-python" id="code-19"># Use Otsu Thresholding 
+# convert the image to grayscale
+grey = cv2.cvtColor(plot_image, cv2.COLOR_BGR2GRAY)
+
+# apply Otsu&#x27;s thresholding method to binarise the image
+thresh = threshold_otsu(grey)
+binary = grey &gt; thresh # where image is greater than threshold, set to true (1)
+
+# Plot the binary image
+fig, ax = plt.subplots(1, 2, figsize=(12, 5))
+ax[0].imshow(plot_image)
+ax[0].set_title(&quot;Original image&quot;)
+
+ax[1].imshow(binary, cmap=&quot;gray&quot;)
+ax[1].set_title(&quot;Binary image&quot;)
+
+fig.suptitle(&#x27;Otsu Thresholding on one of the pathology images&#x27;, fontsize=15)
+
+plt.show()</code></pre>
+            </div>
+            <div class="output-container"><pre class="output-error">NameError on line 5: name &#x27;plot_image&#x27; is not defined</pre></div>
+        </div>
+        <h4>Step 2</h4><p>The <a href="https://docs.opencv.org/3.4/d3/dc0/group__imgproc__shape.html#gaedef8c7340499ca391d459122e51bef5">Connected Components</a> function computes the number of components in the binary image from how much they are close to or connected to other pixels of the same intesity. The output is an identical matrix with pixels replaced with numerical labels.</p>
+        <div class="code-area">
+            <div class="code-container code-fixed">
+                <pre><code class="language-python" id="code-20"># find the connected components in the image
+n_components, labels = cv2.connectedComponents(binary.astype(np.uint8)) # convert to 8-bit image and find labels
+
+# plot the image and the binary image in a side by side manner as a subplot
+fig, ax = plt.subplots(1, 3, figsize=(14, 5))
+
+
+ax[0].imshow(plot_image)
+ax[0].set_title(&quot;original image&quot;)
+
+ax[1].imshow(labels, cmap=&quot;jet&quot;) # each unique label represents a different segment
+ax[1].set_title(&quot;Connected components&quot;)
+
+ax[2].imshow(binary)
+ax[2].imshow(binary, cmap=&quot;gray&quot;)
+ax[2].set_title(&quot;binary image&quot;)
+
+fig.suptitle(&#x27;Connected components on one of the pathology images&#x27;, fontsize=15)
+plt.show()</code></pre>
+            </div>
+            <div class="output-container"><pre class="output-error">NameError on line 4: name &#x27;binary&#x27; is not defined</pre></div>
+        </div>
+        
+                    </div>
+                </div>
+            </div>
+            
+            <div class="module-card" id="results--segment-importance">
+                <div class="module-body">
+                    <div class="module-section">
+                        <h3>Results: Segment importance</h3>
+                        <p>Now we have the segment, the function <a href="https://captum.ai/api/feature_ablation.html">FeatureAblation</a> can be used instead of <strong>Occlusion</strong>. This class will occlude each segment at a time, instead of on a per pixel basis. The steps to apply and view the results are the same as for the <strong>Occlusion method</strong>.</p>
+        <div class="code-area">
+            <div class="code-container code-fixed">
+                <pre><code class="language-python" id="code-21">from captum.attr import FeatureAblation</code></pre>
+            </div>
+            
+        </div>
+        
+        <div class="code-area">
+            <div class="code-container code-fixed">
+                <pre><code class="language-python" id="code-22"># Create the feature ablation interpreter
+feature_ablation = FeatureAblation(model)
+
+# Convert labels to a mask format that Captum can use
+mask = torch.from_numpy(labels).unsqueeze(0).unsqueeze(0).to(device) # Have labels match dimensions of the image
+
+# Get attributions for each segment
+attributions_seg = feature_ablation.attribute(
+    original_image, # image as tensor
+    target=pred_class,
+    feature_mask=mask,
+    perturbations_per_eval=1
+)
+
+attribution_map = attributions_seg.squeeze(0).cpu().detach().numpy()
+attribution_map = np.transpose(attribution_map, (1,2,0))
+</code></pre>
+            </div>
+            
+        </div>
+        
+        <div class="code-area">
+            <div class="code-container code-fixed">
+                <pre><code class="language-python" id="code-23"># Extract the figure and axes from the visualisation
+fig, ax = viz.visualize_image_attr_multiple(attribution_map,
+                                      plot_image, # the same image
+                                      [&#x27;original_image&#x27;, &#x27;heat_map&#x27;], # image type
+                                      [&quot;all&quot;, &quot;all&quot;], # values to show
+                                      show_colorbar=True,
+                                      use_pyplot=False, # allows us to customise the figure
+                                      fig_size=(10, 5));
+
+
+fig.tight_layout()
+
+ax[0].set_title(f&quot;Predicted: {pred_class_text} \n Real: {real_label_text}&quot;)
+ax[1].set_title(&quot;Segment Explainability attributions&quot;)
+
+fig</code></pre>
+            </div>
+            <div class="output-container"><pre class="output-error">NameError on line 4: name &#x27;attribution_map&#x27; is not defined</pre></div>
+        </div>
+        <p>The <em>three</em> largest segments all appear to positively help with the prediction of the class. Specifically, the darker tissue segment has a score of <strong>1.0</strong>, indicating without it the model is unable to make a correct prediction.</p><h4>Comparing importance methods</h4><p>Comparing the <strong>per pixel</strong> method with the <strong>segments</strong> approach reveals an encouraging degree of overlap. However, the segment-based method produces a different pattern: because occluding entire segments has a larger effect, the positive importance values tend to spread across the whole image rather than concentrating in a single area. Since our segments come from unsupervised thresholding and we lack expertise in colon histopathology, it&#x27;s difficult to determine whether we&#x27;ve truly segmented distinct tissue regions. Therefore, we cannot definitively say which importance map provides a better representation.<br><br>As with all approaches to understanding a model, having a domain expert is <strong>essential</strong> for extracting meaningful insights from the outcome.</p>
+        <div class="code-area">
+            <div class="code-container code-fixed">
+                <pre><code class="language-python" id="code-24"># Create figure with 5 subplots
+fig, ax = plt.subplots(1, 3, figsize=(14, 5))
+
+methods = [&#x27;heat_map&#x27;, &#x27;original_image&#x27;, &#x27;heat_map&#x27;]
+signs = [&quot;all&quot;, &quot;all&quot;, &quot;all&quot;]
+
+for i, (method, sign) in enumerate(zip(methods, signs)):
+
+    if i == 2: # For final image use the pixel data, not segments
+
+        viz.visualize_image_attr(
+            attributions_data,
+            plot_image,
+            method=method,
+            sign=sign,
+            plt_fig_axis=(fig, ax[i]),
+            use_pyplot=False,
+            show_colorbar=True
+        )
+
+    else:
+
+        viz.visualize_image_attr(
+            attribution_map,
+            plot_image,
+            method=method,
+            sign=sign,
+            plt_fig_axis=(fig, ax[i]),
+            use_pyplot=False,
+            show_colorbar=True
+        )
+
+ax[0].set_title(&quot;Segments&quot;)
+ax[1].set_title(&quot;Original&quot;)
+ax[2].set_title(&quot;Per pixel&quot;)
+plt.show()</code></pre>
+            </div>
+            <div class="output-container"><pre class="output-error">NameError on line 26: name &#x27;attribution_map&#x27; is not defined</pre><img src="data:image/png;base64,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" class="output-image" width="1147" height="434" /></div>
+        </div>
+        
+        <div class="info-box tip-box">
+            <div class="box-title">
+                <span class="box-icon"></span>
+                TIP
+            </div>
+            <div class="box-content">
+                <p>To combine plots into your own custom subplots, use the <code>viz.visualize_image_attr</code> function (which onlt plots one Captum plot at a time) with a <code>for</code> loop. You can then also add in non Captum plots to your visualisations too.</p>
+            </div>
+        </div>
+        
+                    </div>
+                </div>
+            </div>
+            
+            <div class="module-card" id="lime">
+                <div class="module-body">
+                    <div class="module-section">
+                        <h3>LIME</h3>
+                        <p>LIME, which stands for <strong>Local Interpretable Model-Agnostic Explanations</strong>, and can be viewed as an extension of the feature segmentation with ablation that we just did previously.<br><br>LIME is a versatile tool that works with any machine learning model. Similar to the occlusion method, it operates by modifying the original image, such as turning pixels or features on and off randomly. Much like we saw previously with occluson. Differently, these altered images are then used to train a simple, more interpretable model, such as a linear model. This model aims to mimic the original machine learning model&#x27;s decisions based on the changed images. The insights gained from the linear model help explain what the AI is focusing on in the images.</p>
+        <div class="code-area">
+            <div class="code-container code-fixed">
+                <pre><code class="language-python" id="code-25">from captum.attr import Lime</code></pre>
+            </div>
+            
+        </div>
+        
+        <div class="code-area">
+            <div class="code-container code-fixed">
+                <pre><code class="language-python" id="code-26"># define the lime interpreter
+lime = Lime(model)
+
+# get the model’s prediction
+pred = model(original_image)
+pred_class = pred.argmax(dim=1) # get the class
+
+attributions_lime = lime.attribute(original_image,
+                                    target=pred_class,
+                                    feature_mask=mask,
+                                    )</code></pre>
+            </div>
+            
+        </div>
+        
+        <div class="code-area">
+            <div class="code-container code-fixed">
+                <pre><code class="language-python" id="code-27"># Prepare the data for visualisation
+lime_data = np.transpose(attributions_lime.squeeze().cpu().detach().numpy(), (1, 2, 0))</code></pre>
+            </div>
+            
+        </div>
+        
+        <div class="code-area">
+            <div class="code-container code-fixed">
+                <pre><code class="language-python" id="code-28"># Extract the figure and axes from the visualisation
+fig, ax = viz.visualize_image_attr_multiple(lime_data,
+                                      plot_image, # the same image
+                                      [&#x27;original_image&#x27;, &#x27;heat_map&#x27;], # image type
+                                      [&quot;all&quot;, &quot;all&quot;], # values to show
+                                      show_colorbar=True,
+                                      use_pyplot=False, # allows us to customise the figure
+                                      fig_size=(10, 5));
+
+
+fig.tight_layout()
+
+ax[0].set_title(f&quot;Predicted: {pred_class_text} \n Real: {real_label_text}&quot;)
+ax[1].set_title(&quot;LIME Segemnt Explainability&quot;)
+
+fig</code></pre>
+            </div>
+            
+        </div>
+        <p>The result looks very similar to the previous example, with the darker tissue segments being the most predictive of normal colon mucosa.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="module-card" id="results--comparing-lime">
+                <div class="module-body">
+                    <div class="module-section">
+                        <h3>Results: Comparing LIME</h3>
+                        <p>To get a better understanding of any predicitve differences, lets plot them all on the same figure and alter the colour map to be more distinct in the positive end of the spectrum.</p>
+        <div class="code-area">
+            <div class="code-container code-fixed">
+                <pre><code class="language-python" id="code-29"># Create figure with 5 subplots
+fig, ax = plt.subplots(1, 3, figsize=(14, 5))
+
+methods = [&#x27;heat_map&#x27;, &#x27;original_image&#x27;, &#x27;heat_map&#x27;]
+signs = [&quot;all&quot;, &quot;all&quot;, &quot;all&quot;]
+
+for i, (method, sign) in enumerate(zip(methods, signs)):
+
+    if i == 2: # For final image use the pixel data, not segments
+
+        viz.visualize_image_attr(
+            lime_data,
+            plot_image,
+            method=method,
+            sign=sign,
+            cmap=plt.cm.jet,
+            plt_fig_axis=(fig, ax[i]),
+            use_pyplot=False,
+            show_colorbar=True
+        )
+
+    else:
+
+        viz.visualize_image_attr(
+            attribution_map,
+            plot_image,
+            method=method,
+            sign=sign,
+            cmap=plt.cm.jet,
+            plt_fig_axis=(fig, ax[i]),
+            use_pyplot=False,
+            show_colorbar=True
+        )
+
+ax[0].set_title(&quot;Standard ablation&quot;)
+ax[1].set_title(&quot;Original&quot;)
+ax[2].set_title(&quot;LIME&quot;)
+plt.show()</code></pre>
+            </div>
+            <div class="output-container"><pre class="output-error">NameError on line 27: name &#x27;attribution_map&#x27; is not defined</pre><img src="data:image/png;base64,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" class="output-image" width="1147" height="434" /></div>
+        </div>
+        <p>As can be seen the two methods have very similar results, which is to be expected given the underlying properties of the two methods. Both standard <strong>feature ablation</strong> and <strong>LIME</strong> can be used successfully to explain a models predictions, it may just be a matter of preference or computing resources which determines which method to use.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="module-card" id="results--comparing-lime">
+                <div class="module-body">
+                    <div class="module-section">
+                        
+        <div class="info-box practice-exercise-box">
+            <div class="box-title">
+                <span class="box-icon"></span>
+                PRACTICE EXERCISE
+            </div>
+            <div class="box-content">
+                <p><strong>1.</strong></p>
+                <p>Download this notebook. Using only <strong>incorrect</strong> predictions of a singular class, create a plot of 5 images and their feature importance maps to better understand why the model made these predictions.<br>Use all <strong>three</strong> methods we have covered in this lesson.</p>
+            </div>
+        </div>
+        
+                    </div>
+                </div>
+            </div>
+            
+            <div class="module-card" id="summary">
+                <div class="module-body">
+                    <div class="module-section">
+                        <h3>Summary</h3>
+                        <p>We have walked through the process of gaining information about what features in an image are most important for a model to make it&#x27;s predictions However, it must be noted that scores and importances can be misleading. In our steps we have only being <strong>removing</strong> a few pixels or a singular segment at a time. It could be that a combination of segments or non-localised pixels are the most responsible for a prediction and we have missed it.<br><br>As always, it is best to use feature importance as a guide alongside expert, domain knowledge of the dataset to guide your investigations towards likely features.</p>
+                    </div>
+                </div>
+            </div>
+            
+        
+        <div class="page-navigation">
+            <a href="./what-is-xAI.html" class="nav-button prev">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                    <path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/>
+                </svg>
+                Previous
+            </a>
+            <a href="./tabular-xAI.html" class="nav-button next">
+                Next
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                    <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/>
+                </svg>
+            </a></div>
+        
+        <!-- Footer -->
+        <div class="footer">
+            <div>© All materials are copyright scryptIQ 2025</div>
+            <div>Static Notebook - Pre-executed Content</div>
+        </div>
+    </div>
+
+    <!-- JavaScript -->
+    <script src="../assets/main.js"></script>
+    
+    <!-- Initialize syntax highlighting -->
+    <script>
+        // Set page ready flag immediately for PDF generation
+        window.pageReady = true;
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('pre code').forEach((block) => {
+                hljs.highlightElement(block);
+            });
+        });
+    </script>
+</body>
+</html>
+    
