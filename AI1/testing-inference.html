@@ -161,7 +161,7 @@ $$</p>
                 <div class="module-body">
                     <div class="module-section">
                         <h3>The AND gate function</h3>
-                        <p>Let&#x27;s set out another worked example to run through training and testing a basic <em>neural network</em>. We begin by defining a simple neural network with a single hidden layer. The computation performed by this layer can be written as:<br><br>$$
+                        <p>We will utilise another worked example to run through training and testing a basic <em>neural network</em>. We begin by defining a simple neural network with a single hidden layer. The computation performed by this layer can be written as:<br><br>$$
 y = \tanh(Wx + b)
 $$<br><br>Here, $W$ denotes a matrix of weights, $b$ is a vector of bias terms, and $x$ is a vector of input values. As discussed earlier, the weights and biases of the network are learned during training through <strong>gradient descent</strong>.<br><br>Our goal is to construct a layer of neurons that can learn the behaviour of an <strong>AND gate</strong>. The term &#x27;AND gate&#x27; refers to a basic logical operation that outputs 1 only when <em>both</em> of its inputs are 1. In all other cases, the output is 0.<br><br>The truth table for an AND gate is shown below:<br><br></p><table class="markdown-table">
 <thead>
@@ -229,7 +229,7 @@ $$<br><br>Each row of $X$ corresponds to one possible input combination for the 
                 <p>The <strong>learning rate</strong> is a <em>hyperparameter</em> that controls <strong>how large a step the model takes</strong> when updating its parameters during training. It determines <em>how quickly the model learns</em>, with larger values leading to faster but potentially unstable updates, and smaller values leading to slower but more stable learning.</p>
             </div>
         </div>
-        <p>In the code block below, let&#x27;s train a simple neural network to predict the correct output $y$, given the inputs $x1$ and $x2$.<br><br>The code defines variables for <code>epochs</code> and <code>learning_rate</code>, so these can be easily adjusted, and the code cell re-run. A prediction and loss calculation are performed at each epoch, and the code uses a conditional statement and the modulus operator <code>%</code> to print the loss and epoch number, every 500 epochs.</p>
+        <p>The code  below trains a simple neural network to predict the correct output $y$, given the inputs $x1$ and $x2$.<br><br>The code defines variables for <code>epochs</code> and <code>learning_rate</code>, so these can be easily adjusted, and the code cell re-run. A prediction and loss calculation are performed at each epoch, and the code uses a conditional statement and the modulus operator <code>%</code> to print the loss and epoch number, every 500 epochs.</p>
         <div class="code-area">
             <div class="code-container code-fixed">
                 <pre><code class="language-python" id="code-20"># Import need modules
@@ -380,7 +380,7 @@ Epoch: 4000 | loss: 0.0135
                 <div class="module-body">
                     <div class="module-section">
                         <h3></h3>
-                        <p>Once you have attempted the practice exercise, let&#x27;s try to answer those questions, visually.<br><br>As we saw in the previous section, as the model is trained, the loss decreases. As visualised below:</p>
+                        <p>Once you have attempted the practice exercise, we will try to answer those questions, visually.<br><br>As we saw in the previous section, as the model is trained, the loss decreases. As visualised below:</p>
         <div class="code-area">
             <div class="code-container code-fixed">
                 <pre><code class="language-python" id="code-26"># Plot the loss over time:
