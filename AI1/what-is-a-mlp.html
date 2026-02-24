@@ -79,6 +79,16 @@
             </ul>
         </div>
 
+        <h3 class="collapsible-header collapsed">
+            Previous Modules
+            <span class="collapse-icon">►</span>
+        </h3>
+        <div class="collapsible-content collapsed">
+            <ul>
+            <li><a href="../AI0/introduction.html">AI0</a></li>
+        </ul>
+        </div>
+
         <h3>
             <li><a href="./report-issue.html">Report an Issue</a></li>
         </h3>
@@ -199,7 +209,7 @@
                 <div class="module-body">
                     <div class="module-section">
                         <h3>What is a Multi-Layer Perceptron?</h3>
-                        <h4>Multi-Layer Perceptrons (MLPs)</h4><p>A <strong>MLP</strong> is a direct extension of the aforementioned single-neuron idea, formed by combining many neurons across multiple layers.<br><br>An MLP consists of several distinct types of layers:<br><ul class="nested-list"><li>The first layer is called the <em>input layer</em></li><br><li>The final layer is called the <em>output layer</em></li><br><li>Any layers between the input and output are known as <em>hidden layers</em>, each typically containing many neurons</li></ul></p><p><img src="./images/Fig_m-l-p.png" alt="Fig. 2: Input, hidden, and output layers in a multi-layer perceptron" class="notebook-image"></p><h4>Selecting neural network architecture</h4><p>A natural question arises at this point: <em>how many neurons</em> should each layer contain, and <em>how many layers</em> should the network have?<br><br>The number of layers and neurons depends strongly on the task at hand and is often chosen <em>empirically</em>, often determined <em>via</em> experimentation, benchmarking and comparisons on similar problems, rather than being directly derived from first principles. This often takes the form of training and comparing multiple architectures to see which performs best on validation data.<br><br>That said, there are also systematic methods for comparing different network architectures and evaluating their performance in a more principled way. One common approach is to <em>treat the architecture itself as a <strong>hyperparameter</strong></em> (a setting of the model) that can be optimised through experimentation. This typically involves training multiple networks with different configurations: such as the <em>number of hidden layers</em>, the <em>number of neurons per layer</em>, or both, and <em>comparing</em> their performance. The architecture that <em>achieves the best score</em>, achieving the <em>smallest losses</em> whilst <em>avoiding overfitting</em> is then selected for a final, full training and evaluation.</p><p>![](images/Fig_architecture.png)</p>
+                        <h4>Multi-Layer Perceptrons (MLPs)</h4><p>A <strong>MLP</strong> is a direct extension of the aforementioned single-neuron idea, formed by combining many neurons across multiple layers.<br><br>An MLP consists of several distinct types of layers:<br><ul class="nested-list"><li>The first layer is called the <em>input layer</em></li><br><li>The final layer is called the <em>output layer</em></li><br><li>Any layers between the input and output are known as <em>hidden layers</em>, each typically containing many neurons</li></ul></p><p><img src="./images/Fig_m-l-p.png" alt="Fig. 2: Input, hidden, and output layers in a multi-layer perceptron" class="notebook-image"></p><h4>Selecting neural network architecture</h4><p>A natural question arises at this point: <em>how many neurons</em> should each layer contain, and <em>how many layers</em> should the network have?<br><br>The number of layers and neurons depends strongly on the task at hand and is often chosen <em>empirically</em>, often determined <em>via</em> experimentation, benchmarking and comparisons on similar problems, rather than being directly derived from first principles. This often takes the form of training and comparing multiple architectures to see which performs best on validation data.<br><br>That said, there are also systematic methods for comparing different network architectures and evaluating their performance in a more principled way. One common approach is to <em>treat the architecture itself as a <strong>hyperparameter</strong></em> (a setting of the model) that can be optimised through experimentation. This typically involves training multiple networks with different configurations: such as the <em>number of hidden layers</em>, the <em>number of neurons per layer</em>, or both, and <em>comparing</em> their performance. The architecture that <em>achieves the best score</em>, achieving the <em>smallest losses</em> whilst <em>avoiding overfitting</em> is then selected for a final, full training and evaluation.</p><p><img src="./images/Fig_architecture.png" alt="Selecting the Architecture" class="notebook-image"></p>
         <div class="info-box key-terms-box">
             <div class="box-title">
                 <span class="box-icon"></span>
