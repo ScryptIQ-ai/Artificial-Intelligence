@@ -81,6 +81,7 @@
         </h3>
         <div class="collapsible-content collapsed">
             <ul>
+            <li><a href="../AI0/introduction.html">AI0</a></li>
             <li><a href="../AI1/introduction.html">AI1</a></li>
         </ul>
         </div>
@@ -114,14 +115,14 @@
                     Introduction <span class="module-tag">AI2</span>
                 </div>
                 <div class="module-body">
-                    <p>Welcome to <strong>Artificial Intelligence 2</strong>, the second lesson in the AI module. Previously we looked at vanilla neural networks, using them to predict the digit present in a handwritten image. Whilst, standard neural nets can be used to predict what is in an image, there is a modification that is able to identify localised patterns in the pixels in an image, rather than just looking at each pixel as a feature.<br><br>This modified neural net is a <strong>Convolutional Neural Network</strong> (CNN) and is a model architecture often used for image recognition tasks. If you&#x27;ve ever had to identify a bike or bus in a captcha, you have been supplying the labels for an <a href="https://image-net.org/">ImageNet</a> that is used to train visual classifiers like CNNs.</p>
+                    <p>Welcome to <strong>Artificial Intelligence 2</strong>, the second lesson in scryptIQ&#x27;s AI module. Previously we looked at vanilla neural networks, using them to predict the digit present in a handwritten image. While standard neural nets can be used to predict what is <em>in</em> an image, there is a modification that is able to <em>identify localised patterns</em> in the pixels in an image, rather than just looking at each pixel as a feature.<br><br>This modified neural network is termed a <strong>Convolutional Neural Network (CNN)</strong> and is a model architecture often used for <em>image recognition</em> tasks. If you&#x27;ve ever had to identify a bike or bus in a captcha, you have been supplying the labels for an <a href="https://image-net.org/">ImageNet</a> that is used to train visual classifiers like CNNs.</p>
         <div class="info-box note-box">
             <div class="box-title">
                 <span class="box-icon"></span>
                 NOTE
             </div>
             <div class="box-content">
-                <p>Visual transformers have overtaken CNNs as the default machine learning model for image classification. The visual transformer utilises much of the same architecture as large language models (LLM), the transformer. However, like LLMs, they require a lot of data to train and are not as effective as CNNs on smaller datasets.</p>
+                <p><strong>Visual transformers</strong> have overtaken CNNs as the default machine learning model for image classification, at the time of writing. The visual transformer utilises much of the <em>same</em> architecture as <strong>Large Language Models (LLMs)</strong>, the <strong>transformer</strong>. However, much like LLMs, visual transformers require a lot of data to train on, and are <em>not as effective as CNNs on smaller datasets</em>.</p>
             </div>
         </div>
         
@@ -131,15 +132,15 @@
             <div class="module-card" id="pytorch">
                 <div class="module-body">
                     <div class="module-section">
-                        <h3>Pytorch</h3>
-                        <p>In this lesson, we will use the popular Python framework <strong>PyTorch</strong> to explore the foundations of deep learning. <strong>PyTorch</strong> is an open-source machine learning framework for Python that provides tools for building, training and deploying neural networks. It combines efficient tensor computation with automatic differentiation, allowing models to be defined and optimised in a flexible and intuitive way. PyTorch is widely used in both research and industry due to its clear syntax, strong support for GPU acceleration and seamless integration with the Python scientific computing ecosystem.<br><br>Whilst we will be explaining throughout what each step does, this will not be a deep dive into the <strong>PyTorch</strong> ecosystem. You can learn more about how to use <em>PyTorch</em> from their own website <a href="https://docs.pytorch.org/tutorials/beginner/basics/intro.html">here</a>.</p>
+                        <h3>PyTorch</h3>
+                        <p>In this lesson, we will use the popular Python framework <strong>PyTorch</strong> to explore the foundations of deep learning. <strong>PyTorch</strong> is an <em>open-source</em> machine learning framework for Python that provides tools for <em>building, training and deploying neural networks</em>. It combines efficient <strong>tensor computation</strong> with <strong>automatic differentiation</strong>, allowing models to be defined and optimised in a flexible and intuitive way. PyTorch is widely used in both research and industry due to its clear, intelligible <em>syntax</em>, strong support for <em>GPU</em> acceleration and seamless integration with the Python scientific computing ecosystem.<br><br>Whilst we will be explaining throughout what each step does, this will not be a deep dive into the <strong>PyTorch</strong> ecosystem. You can learn more about how to use <em>PyTorch</em> from their own website <a href="https://docs.pytorch.org/tutorials/beginner/basics/intro.html">here</a>.</p>
         <div class="info-box tip-box">
             <div class="box-title">
                 <span class="box-icon"></span>
                 TIP
             </div>
             <div class="box-content">
-                <p>Everything in the online materials can be run as a jupyter notebook, simply download them under the Resources/Downloads tab in the sidebar.<br><br>To run the notebooks you may wish to create a virtual environment with the correct packages installed. The relevant packages and their versions can be found in the <code>pyproject.toml</code> in your lesson repository, see the README on how to install these packages from the <strong>toml</strong> file. We have chosen to install the <strong>CPU</strong> only version of torch for this example as we are not dealing with large datasets, however when it comes to the real world you may want to use the GPU enabled version which is much quicker (if you have a GPU).<br><br>If you are unsure about virtual environments, please look through the relevant section of our <a href="/Python-Fundamentals/PF0/introduction.html">Python Orientation reference materials</a>.</p>
+                <p>Everything in these written materials can be run as a Jupyter notebook. Simply download them under the <strong>Resources/Downloads</strong> tab in the sidebar.<br><br>To run the notebooks you may wish to create a <strong>virtual environment</strong> with the correct packages installed. The relevant packages and their versions can be found in the <code>pyproject.toml</code> file in your lesson repository: please see the <strong>ReadMe</strong> on how to install these packages from the <strong>toml</strong> file. We have opted to install the <strong>CPU-only</strong> version of Torch for this example as we are not dealing with large datasets, however when it comes to the real world, you may want to use the GPU-enabled version, which is much quicker (if your machine has a GPU).<br><br>If you are unsure about virtual environments, please look through the relevant section of our <a href="../PF0/introduction.html">Python Orientation reference materials</a>.</p>
             </div>
         </div>
         
